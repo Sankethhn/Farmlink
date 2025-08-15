@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Farm Link — Farmer Dashboard</title>
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    .thin-scroll::-webkit-scrollbar { height: 8px; width: 8px; }
+    .thin-scroll::-webkit-scrollbar-thumb { 
+      background: rgba(0,0,0,0.12); 
+      border-radius: 8px; 
+    }
+    .thin-scroll::-webkit-scrollbar-track {
+      background: rgba(0,0,0,0.05);
+    }
+    .error-boundary { background: #fee2e2; padding: 1rem; border-radius: 0.5rem; }
+    .card-hover:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+    }
+    .card-hover {
+      transition: all 0.3s ease;
+    }
+    .status-available {
+      background-color: #d1fae5;
+      color: #065f46;
+    }
+    .status-soldout {
+      background-color: #fee2e2;
+      color: #b91c1c;
+    }
+    .status-pending {
+      background-color: #fef3c7;
+      color: #92400e;
+    }
+    .status-delivered {
+      background-color: #dbeafe;
+      color: #1e40af;
+    }
+    .animate-pulse {
+      animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans">
+  <!-- NAV -->
+  <header class="bg-gradient-to-r from-emerald-600 to-green-500 text-white p-4 sticky top-0 z-40 shadow-lg">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <span class="p-2 bg-white/20 rounded-lg shadow"><svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h10a4 4 0 004-4v-3a4 4 0 00-1.2-2.8L15 3 9 12 4.2 9.2A4 4 0 003 15z"/></svg></span>
+        <h1 class="font-bold text-xl tracking-tight">Farm Link</h1>
+        <span class="text-sm opacity-90">— Farmer Dashboard</span>
+      </div>
+      <div class="hidden sm:flex items-center gap-4">
+        <div class="flex items-center gap-2 bg-white/20 rounded-lg px-3 py-1 shadow-inner">
+          <svg data-lucide="search" class="w-4 h-4"></svg>
+          <span class="text-sm">Manage your crops & orders</span>
+        </div>
+        <button id="btnExportData" class="flex items-center gap-1 bg-white/10 hover:bg-white/20 rounded-lg px-3 py-1 text-sm transition-colors">
+          <svg data-lucide="download" class="w-4 h-4"></svg>
+          Export
+        </button>
+        <button id="btnImportData" class="flex items-center gap-1 bg-white/10 hover:bg-white/20 rounded-lg px-3 py-1 text-sm transition-colors">
+          <svg data-lucide="upload" class="w-4 h-4"></svg>
+          Import
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <main class="max-w-7xl mx-auto p-6">
+    <!-- Stats Cards -->
+    <section class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+      <div class="bg-white rounded-xl shadow-md p-4 card-hover">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm text-gray-500">Total Crops</p>
+            <h3 class="text-2xl font-bold" id="statsTotalCrops">0</h3>
+          </div>
+          <div class="p-3 rounded-full bg-emerald-50 text-emerald-600">
+            <svg data-lucide="wheat" class="w-6 h-6"></svg>
+          </div>
+        </div>
+      </div>
+      <div class="bg-white rounded-xl shadow-md p-4 card-hover">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm text-gray-500">Available Crops</p>
+            <h3 class="text-2xl font-bold" id="statsAvailableCrops">0</h3>
+          </div>
+          <div class="p-3 rounded-full bg-blue-50 text-blue-600">
+            <svg data-lucide="package-check" class="w-6 h-6"></svg>
+          </div>
+        </div>
+      </div>
+      <div class="bg-white rounded-xl shadow-md p-4 card-hover">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm text-gray-500">Total Orders</p>
+            <h3 class="text-2xl font-bold" id="statsTotalOrders">0</h3>
+          </div>
+          <div class="p-3 rounded-full bg-purple-50 text-purple-600">
+            <svg data-lucide="shopping-cart" class="w-6 h-6"></svg>
+          </div>
+        </div>
+      </div>
+      <div class="bg-white rounded-xl shadow-md p-4 card-hover">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm text-gray-500">Pending Orders</p>
+            <h3 class="text-2xl font-bold" id="statsPendingOrders">0</h3>
+          </div>
+          <div class="p-3 rounded-full bg-amber-50 text-amber-600">
+            <svg data-lucide="clock" class="w-6 h-6"></svg>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center mb-6">
+      <div class="col-span-2">
+        <label class="sr-only" for="globalSearch">Search</label>
+        <div class="relative">
+          <input id="globalSearch" type="search" placeholder="Search crops or orders..." class="w-full border rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent" />
+          <button id="clearSearch" class="absolute right-3 top-3 hidden p-1 rounded-full text-gray-600 hover:bg-gray-100" title="Clear search">
+            <svg data-lucide="x" class="w-4 h-4"></svg>
+          </button>
+        </div>
+      </div>
+      <div class="flex gap-2 justify-end items-center">
+        <select id="statusFilter" class="border rounded-xl px-3 py-2 bg-white focus:ring-2 focus:ring-emerald-300 focus:border-transparent" aria-label="Filter crops by status">
+          <option value="all">All statuses</option>
+          <option value="Available">Available</option>
+          <option value="Sold Out">Sold Out</option>
+        </select>
+        <select id="sortBy" class="border rounded-xl px-3 py-2 bg-white focus:ring-2 focus:ring-emerald-300 focus:border-transparent" aria-label="Sort crops">
+          <option value="default">Sort: Default</option>
+          <option value="qty-desc">Qty (high → low)</option>
+          <option value="qty-asc">Qty (low → high)</option>
+          <option value="price-desc">Price (high → low)</option>
+          <option value="price-asc">Price (low → high)</option>
+        </select>
+      </div>
+    </section>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <section class="bg-white rounded-xl shadow-lg p-6 card-hover">
+        <h2 class="flex items-center gap-2 text-lg font-semibold mb-4">
+          <svg data-lucide="plus-circle" class="w-5 h-5 text-emerald-600"></svg>
+          Add New Crop
+        </h2>
+        <form id="addCropForm" class="space-y-4" autocomplete="off" novalidate>
+          <div>
+            <label for="cropName" class="block text-sm font-medium mb-1">Crop Name</label>
+            <input id="cropName" name="cropName" type="text" placeholder="e.g. Wheat, Tomato" class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-emerald-300 focus:border-transparent" required />
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label for="cropQty" class="block text-sm font-medium mb-1">Quantity (kg)</label>
+              <input id="cropQty" name="cropQty" type="number" min="1" placeholder="100" class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-emerald-300 focus:border-transparent" required />
+            </div>
+            <div>
+              <label for="cropPrice" class="block text-sm font-medium mb-1">Price per kg (₹)</label>
+              <input id="cropPrice" name="cropPrice" type="number" min="1" placeholder="₹ 25" class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-emerald-300 focus:border-transparent" required />
+            </div>
+          </div>
+          <div class="flex gap-2">
+            <button id="btnAdd" type="submit" class="flex-1 bg-gradient-to-r from-emerald-600 to-green-500 text-white rounded-lg px-4 py-2 hover:from-emerald-700 hover:to-green-600 inline-flex items-center justify-center gap-2 shadow-md transition-all" disabled>
+              <svg data-lucide="plus" class="w-4 h-4"></svg>
+              Add Crop
+            </button>
+            <button id="btnReset" type="button" class="flex-1 border rounded-lg px-4 py-2 hover:bg-gray-50 transition-colors">Reset</button>
+          </div>
+          <p id="formError" class="text-sm text-red-600 hidden" role="alert" aria-live="assertive"></p>
+        </form>
+        <div class="mt-6 pt-4 border-t border-gray-100">
+          <h3 class="text-sm font-medium mb-2 flex items-center gap-2">
+            <svg data-lucide="database" class="w-4 h-4"></svg>
+            Data Management
+          </h3>
+          <div class="grid grid-cols-2 gap-2">
+            <button id="btnClearStorage" class="text-sm text-red-600 border border-red-100 px-3 py-2 rounded-lg hover:bg-red-50 flex items-center gap-2 transition-colors">
+              <svg data-lucide="trash-2" class="w-4 h-4"></svg>
+              Clear Data
+            </button>
+            <button id="btnImportSample" class="text-sm text-emerald-600 border border-emerald-100 px-3 py-2 rounded-lg hover:bg-emerald-50 flex items-center gap-2 transition-colors">
+              <svg data-lucide="file-input" class="w-4 h-4"></svg>
+              Sample Data
+            </button>
+            <button id="btnExportData" class="text-sm text-blue-600 border border-blue-100 px-3 py-2 rounded-lg hover:bg-blue-50 flex items-center gap-2 transition-colors">
+              <svg data-lucide="download" class="w-4 h-4"></svg>
+              Export
+            </button>
+            <button id="btnImportData" class="text-sm text-purple-600 border border-purple-100 px-3 py-2 rounded-lg hover:bg-purple-50 flex items-center gap-2 transition-colors">
+              <svg data-lucide="upload" class="w-4 h-4"></svg>
+              Import
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section class="lg:col-span-2 bg-white rounded-xl shadow-lg p-6 card-hover">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-lg font-semibold flex items-center gap-2">
+            <svg data-lucide="wheat" class="w-5 h-5 text-emerald-600"></svg>
+            My Crops
+          </h2>
+          <div class="flex items-center gap-3">
+            <div class="text-sm text-gray-500">Total: <span id="cropsCount" class="font-medium">0</span></div>
+            <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+          </div>
+        </div>
+        <div class="overflow-x-auto thin-scroll">
+          <table id="cropTable" class="w-full table-auto border-collapse">
+            <thead class="bg-gray-50">
+              <tr class="text-sm text-gray-500">
+                <th class="text-left px-4 py-3 border-b">Name</th>
+                <th class="text-center px-4 py-3 border-b">Qty (kg)</th>
+                <th class="text-center px-4 py-3 border-b">Price/kg (₹)</th>
+                <th class="text-center px-4 py-3 border-b">Status</th>
+                <th class="text-center px-4 py-3 border-b">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="cropTbody" class="divide-y divide-gray-100"></tbody>
+          </table>
+          <div id="cropsEmptyState" class="py-12 text-center text-gray-400 hidden">
+            <svg data-lucide="wheat-off" class="w-12 h-12 mx-auto mb-3 opacity-50"></svg>
+            <p class="text-sm">No crops added yet. Add your first crop to get started!</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="bg-white rounded-xl shadow-lg p-6 lg:col-span-3 card-hover">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-lg font-semibold flex items-center gap-2">
+            <svg data-lucide="shopping-cart" class="w-5 h-5 text-purple-600"></svg>
+            Recent Orders
+          </h2>
+          <div class="flex items-center gap-3">
+            <button id="btnAddSampleOrder" class="text-sm border border-gray-200 px-3 py-1 rounded-lg hover:bg-gray-50 flex items-center gap-2 transition-colors">
+              <svg data-lucide="plus" class="w-4 h-4"></svg>
+              Add Sample
+            </button>
+            <div class="text-sm text-gray-500">Total: <span id="ordersCount" class="font-medium">0</span></div>
+            <div class="w-2 h-2 rounded-full bg-purple-500 animate-pulse"></div>
+          </div>
+        </div>
+        <div class="overflow-x-auto thin-scroll">
+          <table id="ordersTable" class="w-full table-auto border-collapse">
+            <thead class="bg-gray-50">
+              <tr class="text-sm text-gray-500">
+                <th class="text-left px-4 py-3 border-b">Order ID</th>
+                <th class="text-left px-4 py-3 border-b">Buyer</th>
+                <th class="text-left px-4 py-3 border-b">Product</th>
+                <th class="text-center px-4 py-3 border-b">Qty (kg)</th>
+                <th class="text-center px-4 py-3 border-b">Amount (₹)</th>
+                <th class="text-center px-4 py-3 border-b">Status</th>
+                <th class="text-center px-4 py-3 border-b">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="ordersTbody" class="divide-y divide-gray-100"></tbody>
+          </table>
+          <div id="ordersEmptyState" class="py-12 text-center text-gray-400 hidden">
+            <svg data-lucide="shopping-bag" class="w-12 h-12 mx-auto mb-3 opacity-50"></svg>
+            <p class="text-sm">No orders yet. Your orders will appear here!</p>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="max-w-7xl mx-auto p-6 text-sm text-gray-500 border-t border-gray-100">
+    <div class="flex flex-col md:flex-row justify-between items-center">
+      <div class="mb-2 md:mb-0">
+        Built with ❤️ — Farm Link. Local demo (data stored in your browser).
+      </div>
+      <div class="flex items-center gap-4">
+        <button id="btnBackup" class="text-sm text-gray-600 hover:text-gray-800 flex items-center gap-1">
+          <svg data-lucide="save" class="w-4 h-4"></svg>
+          Backup Now
+        </button>
+        <button id="btnPrint" class="text-sm text-gray-600 hover:text-gray-800 flex items-center gap-1">
+          <svg data-lucide="printer" class="w-4 h-4"></svg>
+          Print Report
+        </button>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed bottom-4 right-4 hidden">
+    <div class="bg-gray-800 text-white px-4 py-3 rounded-lg shadow-xl flex items-center gap-3">
+      <svg data-lucide="check-circle" class="w-5 h-5 text-green-400"></svg>
+      <span id="toastMessage">Operation completed successfully</span>
+      <button id="toastClose" class="ml-2 p-1 rounded-full hover:bg-gray-700">
+        <svg data-lucide="x" class="w-4 h-4"></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Import Modal -->
+  <div id="importModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden z-50">
+    <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-semibold">Import Data</h3>
+        <button id="importModalClose" class="p-1 rounded-full hover:bg-gray-100">
+          <svg data-lucide="x" class="w-5 h-5"></svg>
+        </button>
+      </div>
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium mb-1">Upload JSON File</label>
+          <input type="file" id="importFile" accept=".json" class="block w-full text-sm text-gray-500
+            file:mr-4 file:py-2 file:px-4
+            file:rounded-lg file:border file:border-gray-300
+            file:text-sm file:font-medium
+            file:bg-gray-50 file:text-gray-700
+            hover:file:bg-gray-100
+          "/>
+        </div>
+        <div class="pt-2 flex justify-end gap-2">
+          <button id="btnImportCancel" class="px-4 py-2 border rounded-lg hover:bg-gray-50">Cancel</button>
+          <button id="btnImportConfirm" class="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700">Import</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Initialize Lucide icons
+    lucide.createIcons();
+    
+    // Enhanced data storage functions
+    class FarmData {
+      static STORAGE_KEY = 'farmLinkData';
+      
+      static save(data) {
+        try {
+          localStorage.setItem(this.STORAGE_KEY, JSON.stringify(data));
+          return true;
+        } catch (e) {
+          console.error('Failed to save data:', e);
+          return false;
+        }
+      }
+      
+      static load() {
+        try {
+          const data = localStorage.getItem(this.STORAGE_KEY);
+          return data ? JSON.parse(data) : null;
+        } catch (e) {
+          console.error('Failed to load data:', e);
+          return null;
+        }
+      }
+      
+      static clear() {
+        localStorage.removeItem(this.STORAGE_KEY);
+      }
+      
+      static exportData() {
+        const data = this.load();
+        if (!data) {
+          this.showToast('No data to export', 'error');
+          return;
+        }
+        
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `farmlink-data-${new Date().toISOString().slice(0,10)}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        this.showToast('Data exported successfully');
+      }
+      
+      static importData(file, callback) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          try {
+            const data = JSON.parse(e.target.result);
+            if (data && (data.crops || data.orders)) {
+              this.save(data);
+              callback(true);
+              this.showToast('Data imported successfully');
+            } else {
+              this.showToast('Invalid data format', 'error');
+              callback(false);
+            }
+          } catch (e) {
+            console.error('Failed to parse imported file:', e);
+            this.showToast('Failed to parse file', 'error');
+            callback(false);
+          }
+        };
+        reader.onerror = () => {
+          this.showToast('Error reading file', 'error');
+          callback(false);
+        };
+        reader.readAsText(file);
+      }
+      
+      static showToast(message, type = 'success') {
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toastMessage');
+        
+        toastMessage.textContent = message;
+        
+        // Set background color based on type
+        toast.className = `fixed bottom-4 right-4 bg-${type === 'success' ? 'green' : 'red'}-100 text-${type === 'success' ? 'green' : 'red'}-800 px-4 py-3 rounded-lg shadow-xl flex items-center gap-3`;
+        
+        toast.classList.remove('hidden');
+        
+        // Auto-hide after 3 seconds
+        setTimeout(() => {
+          toast.classList.add('hidden');
+        }, 3000);
+      }
+    }
+
+    // Initialize the app
+    document.addEventListener('DOMContentLoaded', () => {
+      // Load data from localStorage
+      const loadData = () => {
+        const data = FarmData.load();
+        if (data) {
+          // Initialize your app with the loaded data
+          console.log('Loaded data:', data);
+          // Update UI accordingly
+        } else {
+          console.log('No saved data found');
+        }
+      };
+      
+      // Set up event listeners
+      document.getElementById('btnExportData').addEventListener('click', FarmData.exportData);
+      document.getElementById('btnImportData').addEventListener('click', () => {
+        document.getElementById('importModal').classList.remove('hidden');
+      });
+      document.getElementById('importModalClose').addEventListener('click', () => {
+        document.getElementById('importModal').classList.add('hidden');
+      });
+      document.getElementById('btnImportCancel').addEventListener('click', () => {
+        document.getElementById('importModal').classList.add('hidden');
+      });
+      document.getElementById('btnImportConfirm').addEventListener('click', () => {
+        const fileInput = document.getElementById('importFile');
+        if (fileInput.files.length > 0) {
+          FarmData.importData(fileInput.files[0], (success) => {
+            if (success) {
+              document.getElementById('importModal').classList.add('hidden');
+              loadData(); // Reload data after successful import
+            }
+          });
+        } else {
+          FarmData.showToast('Please select a file first', 'error');
+        }
+      });
+      document.getElementById('btnClearStorage').addEventListener('click', () => {
+        if (confirm('Are you sure you want to clear all data? This cannot be undone.')) {
+          FarmData.clear();
+          FarmData.showToast('All data cleared');
+          // Reset UI to initial state
+        }
+      });
+      document.getElementById('btnBackup').addEventListener('click', FarmData.exportData);
+      
+      // Initial load
+      loadData();
+    });
+  </script>
+</body>
+</html>
