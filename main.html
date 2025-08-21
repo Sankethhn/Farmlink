@@ -1,25 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Farm Link — Farmer Dashboard</title>
-
-  <!-- Tailwind CDN -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FarmLink - Farm to Business Platform</title>
+  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Lucide Icons -->
-  <script src="https://unpkg.com/lucide@latest"></script>
-
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    .thin-scroll::-webkit-scrollbar { height: 8px; width: 8px; }
-    .thin-scroll::-webkit-scrollbar-thumb { 
-      background: rgba(0,0,0,0.12); 
-      border-radius: 8px; 
-    }
-    .thin-scroll::-webkit-scrollbar-track {
-      background: rgba(0,0,0,0.05);
-    }
-    .error-boundary { background: #fee2e2; padding: 1rem; border-radius: 0.5rem; }
     .card-hover:hover {
       transform: translateY(-2px);
       box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
@@ -35,14 +24,6 @@
       background-color: #fee2e2;
       color: #b91c1c;
     }
-    .status-pending {
-      background-color: #fef3c7;
-      color: #92400e;
-    }
-    .status-delivered {
-      background-color: #dbeafe;
-      color: #1e40af;
-    }
     .animate-pulse {
       animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
     }
@@ -50,439 +31,766 @@
       0%, 100% { opacity: 1; }
       50% { opacity: 0.5; }
     }
+    .menu-item {
+      transition: all 0.3s ease;
+    }
+    .menu-item:hover {
+      transform: scale(1.05);
+      background-color: #f0fdf4;
+    }
+    .login-error {
+      color: #e53e3e;
+      font-size: 0.875rem;
+      margin-top: 0.5rem;
+      display: none;
+    }
   </style>
 </head>
-<body class="bg-gray-50 text-gray-800 font-sans">
-  <!-- NAV -->
-  <header class="bg-gradient-to-r from-emerald-600 to-green-500 text-white p-4 sticky top-0 z-40 shadow-lg">
-    <div class="max-w-7xl mx-auto flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <span class="p-2 bg-white/20 rounded-lg shadow"><svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h10a4 4 0 004-4v-3a4 4 0 00-1.2-2.8L15 3 9 12 4.2 9.2A4 4 0 003 15z"/></svg></span>
-        <h1 class="font-bold text-xl tracking-tight">Farm Link</h1>
-        <span class="text-sm opacity-90">— Farmer Dashboard</span>
-      </div>
-      <div class="hidden sm:flex items-center gap-4">
-        <div class="flex items-center gap-2 bg-white/20 rounded-lg px-3 py-1 shadow-inner">
-          <svg data-lucide="search" class="w-4 h-4"></svg>
-          <span class="text-sm">Manage your crops & orders</span>
+<body class="bg-gray-100">
+  <div id="app" class="min-h-screen flex flex-col">
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-green-800 to-green-600 text-white p-4 shadow-lg">
+      <div class="container mx-auto flex justify-between items-center">
+        <div class="flex items-center space-x-2">
+          <i class="fas fa-leaf text-2xl"></i>
+          <h1 class="text-2xl font-bold">FarmLink</h1>
         </div>
-        <button id="btnExportData" class="flex items-center gap-1 bg-white/10 hover:bg-white/20 rounded-lg px-3 py-1 text-sm transition-colors">
-          <svg data-lucide="download" class="w-4 h-4"></svg>
-          Export
-        </button>
-        <button id="btnImportData" class="flex items-center gap-1 bg-white/10 hover:bg-white/20 rounded-lg px-3 py-1 text-sm transition-colors">
-          <svg data-lucide="upload" class="w-4 h-4"></svg>
-          Import
-        </button>
+        <nav id="auth-nav"></nav>
       </div>
-    </div>
-  </header>
+    </header>
 
-  <!-- MAIN -->
-  <main class="max-w-7xl mx-auto p-6">
-    <!-- Stats Cards -->
-    <section class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-      <div class="bg-white rounded-xl shadow-md p-4 card-hover">
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-sm text-gray-500">Total Crops</p>
-            <h3 class="text-2xl font-bold" id="statsTotalCrops">0</h3>
-          </div>
-          <div class="p-3 rounded-full bg-emerald-50 text-emerald-600">
-            <svg data-lucide="wheat" class="w-6 h-6"></svg>
-          </div>
-        </div>
+    <!-- Main Content -->
+    <main class="flex-grow container mx-auto p-4">
+      <div id="content" class="py-8">
+        <!-- Content will be dynamically loaded here -->
       </div>
-      <div class="bg-white rounded-xl shadow-md p-4 card-hover">
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-sm text-gray-500">Available Crops</p>
-            <h3 class="text-2xl font-bold" id="statsAvailableCrops">0</h3>
-          </div>
-          <div class="p-3 rounded-full bg-blue-50 text-blue-600">
-            <svg data-lucide="package-check" class="w-6 h-6"></svg>
-          </div>
-        </div>
-      </div>
-      <div class="bg-white rounded-xl shadow-md p-4 card-hover">
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-sm text-gray-500">Total Orders</p>
-            <h3 class="text-2xl font-bold" id="statsTotalOrders">0</h3>
-          </div>
-          <div class="p-3 rounded-full bg-purple-50 text-purple-600">
-            <svg data-lucide="shopping-cart" class="w-6 h-6"></svg>
-          </div>
-        </div>
-      </div>
-      <div class="bg-white rounded-xl shadow-md p-4 card-hover">
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-sm text-gray-500">Pending Orders</p>
-            <h3 class="text-2xl font-bold" id="statsPendingOrders">0</h3>
-          </div>
-          <div class="p-3 rounded-full bg-amber-50 text-amber-600">
-            <svg data-lucide="clock" class="w-6 h-6"></svg>
-          </div>
-        </div>
-      </div>
-    </section>
+    </main>
 
-    <section class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center mb-6">
-      <div class="col-span-2">
-        <label class="sr-only" for="globalSearch">Search</label>
-        <div class="relative">
-          <input id="globalSearch" type="search" placeholder="Search crops or orders..." class="w-full border rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent" />
-          <button id="clearSearch" class="absolute right-3 top-3 hidden p-1 rounded-full text-gray-600 hover:bg-gray-100" title="Clear search">
-            <svg data-lucide="x" class="w-4 h-4"></svg>
-          </button>
-        </div>
-      </div>
-      <div class="flex gap-2 justify-end items-center">
-        <select id="statusFilter" class="border rounded-xl px-3 py-2 bg-white focus:ring-2 focus:ring-emerald-300 focus:border-transparent" aria-label="Filter crops by status">
-          <option value="all">All statuses</option>
-          <option value="Available">Available</option>
-          <option value="Sold Out">Sold Out</option>
-        </select>
-        <select id="sortBy" class="border rounded-xl px-3 py-2 bg-white focus:ring-2 focus:ring-emerald-300 focus:border-transparent" aria-label="Sort crops">
-          <option value="default">Sort: Default</option>
-          <option value="qty-desc">Qty (high → low)</option>
-          <option value="qty-asc">Qty (low → high)</option>
-          <option value="price-desc">Price (high → low)</option>
-          <option value="price-asc">Price (low → high)</option>
-        </select>
-      </div>
-    </section>
-
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <section class="bg-white rounded-xl shadow-lg p-6 card-hover">
-        <h2 class="flex items-center gap-2 text-lg font-semibold mb-4">
-          <svg data-lucide="plus-circle" class="w-5 h-5 text-emerald-600"></svg>
-          Add New Crop
-        </h2>
-        <form id="addCropForm" class="space-y-4" autocomplete="off" novalidate>
-          <div>
-            <label for="cropName" class="block text-sm font-medium mb-1">Crop Name</label>
-            <input id="cropName" name="cropName" type="text" placeholder="e.g. Wheat, Tomato" class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-emerald-300 focus:border-transparent" required />
-          </div>
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label for="cropQty" class="block text-sm font-medium mb-1">Quantity (kg)</label>
-              <input id="cropQty" name="cropQty" type="number" min="1" placeholder="100" class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-emerald-300 focus:border-transparent" required />
-            </div>
-            <div>
-              <label for="cropPrice" class="block text-sm font-medium mb-1">Price per kg (₹)</label>
-              <input id="cropPrice" name="cropPrice" type="number" min="1" placeholder="₹ 25" class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-emerald-300 focus:border-transparent" required />
-            </div>
-          </div>
-          <div class="flex gap-2">
-            <button id="btnAdd" type="submit" class="flex-1 bg-gradient-to-r from-emerald-600 to-green-500 text-white rounded-lg px-4 py-2 hover:from-emerald-700 hover:to-green-600 inline-flex items-center justify-center gap-2 shadow-md transition-all" disabled>
-              <svg data-lucide="plus" class="w-4 h-4"></svg>
-              Add Crop
-            </button>
-            <button id="btnReset" type="button" class="flex-1 border rounded-lg px-4 py-2 hover:bg-gray-50 transition-colors">Reset</button>
-          </div>
-          <p id="formError" class="text-sm text-red-600 hidden" role="alert" aria-live="assertive"></p>
-        </form>
-        <div class="mt-6 pt-4 border-t border-gray-100">
-          <h3 class="text-sm font-medium mb-2 flex items-center gap-2">
-            <svg data-lucide="database" class="w-4 h-4"></svg>
-            Data Management
-          </h3>
-          <div class="grid grid-cols-2 gap-2">
-            <button id="btnClearStorage" class="text-sm text-red-600 border border-red-100 px-3 py-2 rounded-lg hover:bg-red-50 flex items-center gap-2 transition-colors">
-              <svg data-lucide="trash-2" class="w-4 h-4"></svg>
-              Clear Data
-            </button>
-            <button id="btnImportSample" class="text-sm text-emerald-600 border border-emerald-100 px-3 py-2 rounded-lg hover:bg-emerald-50 flex items-center gap-2 transition-colors">
-              <svg data-lucide="file-input" class="w-4 h-4"></svg>
-              Sample Data
-            </button>
-            <button id="btnExportData" class="text-sm text-blue-600 border border-blue-100 px-3 py-2 rounded-lg hover:bg-blue-50 flex items-center gap-2 transition-colors">
-              <svg data-lucide="download" class="w-4 h-4"></svg>
-              Export
-            </button>
-            <button id="btnImportData" class="text-sm text-purple-600 border border-purple-100 px-3 py-2 rounded-lg hover:bg-purple-50 flex items-center gap-2 transition-colors">
-              <svg data-lucide="upload" class="w-4 h-4"></svg>
-              Import
-            </button>
-          </div>
-        </div>
-      </section>
-
-      <section class="lg:col-span-2 bg-white rounded-xl shadow-lg p-6 card-hover">
-        <div class="flex items-center justify-between mb-4">
-          <h2 class="text-lg font-semibold flex items-center gap-2">
-            <svg data-lucide="wheat" class="w-5 h-5 text-emerald-600"></svg>
-            My Crops
-          </h2>
-          <div class="flex items-center gap-3">
-            <div class="text-sm text-gray-500">Total: <span id="cropsCount" class="font-medium">0</span></div>
-            <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-          </div>
-        </div>
-        <div class="overflow-x-auto thin-scroll">
-          <table id="cropTable" class="w-full table-auto border-collapse">
-            <thead class="bg-gray-50">
-              <tr class="text-sm text-gray-500">
-                <th class="text-left px-4 py-3 border-b">Name</th>
-                <th class="text-center px-4 py-3 border-b">Qty (kg)</th>
-                <th class="text-center px-4 py-3 border-b">Price/kg (₹)</th>
-                <th class="text-center px-4 py-3 border-b">Status</th>
-                <th class="text-center px-4 py-3 border-b">Actions</th>
-              </tr>
-            </thead>
-            <tbody id="cropTbody" class="divide-y divide-gray-100"></tbody>
-          </table>
-          <div id="cropsEmptyState" class="py-12 text-center text-gray-400 hidden">
-            <svg data-lucide="wheat-off" class="w-12 h-12 mx-auto mb-3 opacity-50"></svg>
-            <p class="text-sm">No crops added yet. Add your first crop to get started!</p>
-          </div>
-        </div>
-      </section>
-
-      <section class="bg-white rounded-xl shadow-lg p-6 lg:col-span-3 card-hover">
-        <div class="flex items-center justify-between mb-4">
-          <h2 class="text-lg font-semibold flex items-center gap-2">
-            <svg data-lucide="shopping-cart" class="w-5 h-5 text-purple-600"></svg>
-            Recent Orders
-          </h2>
-          <div class="flex items-center gap-3">
-            <button id="btnAddSampleOrder" class="text-sm border border-gray-200 px-3 py-1 rounded-lg hover:bg-gray-50 flex items-center gap-2 transition-colors">
-              <svg data-lucide="plus" class="w-4 h-4"></svg>
-              Add Sample
-            </button>
-            <div class="text-sm text-gray-500">Total: <span id="ordersCount" class="font-medium">0</span></div>
-            <div class="w-2 h-2 rounded-full bg-purple-500 animate-pulse"></div>
-          </div>
-        </div>
-        <div class="overflow-x-auto thin-scroll">
-          <table id="ordersTable" class="w-full table-auto border-collapse">
-            <thead class="bg-gray-50">
-              <tr class="text-sm text-gray-500">
-                <th class="text-left px-4 py-3 border-b">Order ID</th>
-                <th class="text-left px-4 py-3 border-b">Buyer</th>
-                <th class="text-left px-4 py-3 border-b">Product</th>
-                <th class="text-center px-4 py-3 border-b">Qty (kg)</th>
-                <th class="text-center px-4 py-3 border-b">Amount (₹)</th>
-                <th class="text-center px-4 py-3 border-b">Status</th>
-                <th class="text-center px-4 py-3 border-b">Actions</th>
-              </tr>
-            </thead>
-            <tbody id="ordersTbody" class="divide-y divide-gray-100"></tbody>
-          </table>
-          <div id="ordersEmptyState" class="py-12 text-center text-gray-400 hidden">
-            <svg data-lucide="shopping-bag" class="w-12 h-12 mx-auto mb-3 opacity-50"></svg>
-            <p class="text-sm">No orders yet. Your orders will appear here!</p>
-          </div>
-        </div>
-      </section>
-    </div>
-  </main>
-
-  <!-- FOOTER -->
-  <footer class="max-w-7xl mx-auto p-6 text-sm text-gray-500 border-t border-gray-100">
-    <div class="flex flex-col md:flex-row justify-between items-center">
-      <div class="mb-2 md:mb-0">
-        Built with ❤️ — Farm Link. Local demo (data stored in your browser).
-      </div>
-      <div class="flex items-center gap-4">
-        <button id="btnBackup" class="text-sm text-gray-600 hover:text-gray-800 flex items-center gap-1">
-          <svg data-lucide="save" class="w-4 h-4"></svg>
-          Backup Now
-        </button>
-        <button id="btnPrint" class="text-sm text-gray-600 hover:text-gray-800 flex items-center gap-1">
-          <svg data-lucide="printer" class="w-4 h-4"></svg>
-          Print Report
-        </button>
-      </div>
-    </div>
-  </footer>
-
-  <!-- Toast Notification -->
-  <div id="toast" class="fixed bottom-4 right-4 hidden">
-    <div class="bg-gray-800 text-white px-4 py-3 rounded-lg shadow-xl flex items-center gap-3">
-      <svg data-lucide="check-circle" class="w-5 h-5 text-green-400"></svg>
-      <span id="toastMessage">Operation completed successfully</span>
-      <button id="toastClose" class="ml-2 p-1 rounded-full hover:bg-gray-700">
-        <svg data-lucide="x" class="w-4 h-4"></svg>
-      </button>
-    </div>
+    <!-- Footer -->
+    <footer class="bg-green-800 text-white p-4 text-center">
+      <p>&copy; 2025 FarmLink. All rights reserved.</p>
+    </footer>
   </div>
 
-  <!-- Import Modal -->
-  <div id="importModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden z-50">
-    <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md">
+  <!-- Login Modal -->
+  <div id="login-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+    <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
       <div class="flex justify-between items-center mb-4">
-        <h3 class="text-lg font-semibold">Import Data</h3>
-        <button id="importModalClose" class="p-1 rounded-full hover:bg-gray-100">
-          <svg data-lucide="x" class="w-5 h-5"></svg>
+        <h2 class="text-2xl font-bold">Login to FarmLink</h2>
+        <button id="close-login" class="text-gray-500 hover:text-gray-700">
+          <i class="fas fa-times"></i>
         </button>
       </div>
-      <div class="space-y-4">
+      <form id="login-form" class="space-y-4">
         <div>
-          <label class="block text-sm font-medium mb-1">Upload JSON File</label>
-          <input type="file" id="importFile" accept=".json" class="block w-full text-sm text-gray-500
-            file:mr-4 file:py-2 file:px-4
-            file:rounded-lg file:border file:border-gray-300
-            file:text-sm file:font-medium
-            file:bg-gray-50 file:text-gray-700
-            hover:file:bg-gray-100
-          "/>
+          <label class="block text-gray-700 mb-1">Email</label>
+          <input type="email" id="login-email" required
+            class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500">
         </div>
-        <div class="pt-2 flex justify-end gap-2">
-          <button id="btnImportCancel" class="px-4 py-2 border rounded-lg hover:bg-gray-50">Cancel</button>
-          <button id="btnImportConfirm" class="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700">Import</button>
+        <div>
+          <label class="block text-gray-700 mb-1">Password</label>
+          <input type="password" id="login-password" required
+            class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500">
         </div>
-      </div>
+        <div>
+          <label class="block text-gray-700 mb-1">Role</label>
+          <select id="login-role" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500">
+            <option value="farmer">Farmer</option>
+            <option value="business">Business</option>
+          </select>
+        </div>
+        <div id="login-error" class="login-error">
+          <i class="fas fa-exclamation-circle mr-1"></i>
+          <span id="error-message">Invalid login credentials</span>
+        </div>
+        <button type="submit" class="w-full bg-green-600 text-white p-2 rounded hover:bg-green-700">
+          Login
+        </button>
+      </form>
     </div>
   </div>
 
   <script>
-    // Initialize Lucide icons
-    lucide.createIcons();
-    
-    // Enhanced data storage functions
-    class FarmData {
+    // Data Storage
+    class FarmLinkStorage {
       static STORAGE_KEY = 'farmLinkData';
       
-      static save(data) {
-        try {
-          localStorage.setItem(this.STORAGE_KEY, JSON.stringify(data));
-          return true;
-        } catch (e) {
-          console.error('Failed to save data:', e);
-          return false;
-        }
+      static getDefaultData() {
+        return {
+          users: [
+            { id: 1, email: 'farmer@example.com', password: 'farmer123', name: 'John Farmer', role: 'farmer' },
+            { id: 2, email: 'business@example.com', password: 'business123', name: 'Fresh Market', role: 'business' }
+          ],
+          products: [
+            { id: 1, name: 'Organic Apples', quantity: 500, price: 2.5, unit: 'kg', farmerId: 1, status: 'Available' },
+            { id: 2, name: 'Fresh Tomatoes', quantity: 300, price: 1.8, unit: 'kg', farmerId: 1, status: 'Available' },
+            { id: 3, name: 'Whole Wheat', quantity: 1000, price: 0.8, unit: 'kg', farmerId: 1, status: 'Available' }
+          ],
+          orders: [],
+          currentUser: null,
+          lastProductId: 3,
+          lastOrderId: 0
+        };
       }
       
       static load() {
-        try {
-          const data = localStorage.getItem(this.STORAGE_KEY);
-          return data ? JSON.parse(data) : null;
-        } catch (e) {
-          console.error('Failed to load data:', e);
-          return null;
-        }
+        const savedData = localStorage.getItem(this.STORAGE_KEY);
+        return savedData ? JSON.parse(savedData) : this.getDefaultData();
+      }
+      
+      static save(data) {
+        localStorage.setItem(this.STORAGE_KEY, JSON.stringify(data));
       }
       
       static clear() {
         localStorage.removeItem(this.STORAGE_KEY);
       }
+    }
+
+    // App State
+    const state = {
+      data: FarmLinkStorage.load(),
+      currentView: 'home'
+    };
+
+    // DOM Elements
+    const elements = {
+      authNav: document.getElementById('auth-nav'),
+      content: document.getElementById('content'),
+      loginModal: document.getElementById('login-modal'),
+      loginForm: document.getElementById('login-form'),
+      closeLogin: document.getElementById('close-login'),
+      loginError: document.getElementById('login-error'),
+      errorMessage: document.getElementById('error-message')
+    };
+
+    // Auth Functions
+    function loginUser(email, password, role) {
+      const user = state.data.users.find(u => 
+        u.email === email && u.password === password && u.role === role
+      );
       
-      static exportData() {
-        const data = this.load();
-        if (!data) {
-          this.showToast('No data to export', 'error');
-          return;
+      if (user) {
+        state.data.currentUser = user;
+        state.currentView = 'menu'; // Set the view to menu after login
+        FarmLinkStorage.save(state.data);
+        renderUI();
+        hideLoginModal();
+        return true;
+      }
+      return false;
+    }
+
+    function logoutUser() {
+      state.data.currentUser = null;
+      state.currentView = 'home'; // Reset to home view after logout
+      FarmLinkStorage.save(state.data);
+      renderUI();
+    }
+
+    function showLoginError(message) {
+      elements.errorMessage.textContent = message;
+      elements.loginError.style.display = 'block';
+    }
+
+    function hideLoginError() {
+      elements.loginError.style.display = 'none';
+    }
+
+    // UI Rendering Functions
+    function renderAuthNav() {
+      if (state.data.currentUser) {
+        elements.authNav.innerHTML = `
+          <div class="flex items-center space-x-4">
+            <span class="hidden sm:inline">Welcome, ${state.data.currentUser.name}</span>
+            <button onclick="logoutUser()" class="bg-red-500 px-4 py-2 rounded hover:bg-red-600">
+              <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+          </div>
+        `;
+      } else {
+        elements.authNav.innerHTML = `
+          <button onclick="showLoginModal()" class="bg-blue-500 px-4 py-2 rounded hover:bg-blue-600">
+            <i class="fas fa-sign-in-alt"></i> Login
+          </button>
+        `;
+      }
+    }
+
+    function renderHomeView() {
+      elements.content.innerHTML = `
+        <div class="text-center">
+          <h2 class="text-3xl font-bold mb-4">Connecting Farmers with Businesses</h2>
+          <p class="text-xl mb-8">A direct marketplace for agricultural products</p>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-white p-6 rounded-lg shadow-md card-hover">
+              <i class="fas fa-tractor text-4xl text-green-600 mb-4"></i>
+              <h3 class="text-xl font-bold mb-2">For Farmers</h3>
+              <p>Sell your products directly to businesses without middlemen</p>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-md card-hover">
+              <i class="fas fa-store text-4xl text-green-600 mb-4"></i>
+              <h3 class="text-xl font-bold mb-2">For Businesses</h3>
+              <p>Source fresh products directly from local farmers</p>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-md card-hover">
+              <i class="fas fa-chart-line text-4xl text-green-600 mb-4"></i>
+              <h3 class="text-xl font-bold mb-2">Better Prices</h3>
+              <p>Fair prices for both farmers and businesses</p>
+            </div>
+          </div>
+          <div class="mt-12">
+            <button onclick="showLoginModal()" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 text-lg">
+              Get Started - Login Now
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderMenuPage() {
+      elements.content.innerHTML = `
+        <div class="text-center mb-8">
+          <h2 class="text-3xl font-bold">Welcome, ${state.data.currentUser.name}</h2>
+          <p class="text-xl text-gray-600">What would you like to do today?</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto">
+          ${state.data.currentUser.role === 'farmer' ? `
+            <div class="bg-white p-6 rounded-lg shadow-md text-center cursor-pointer menu-item" onclick="navigateTo('farmer-dashboard')">
+              <i class="fas fa-tractor text-5xl text-green-600 mb-4"></i>
+              <h3 class="text-xl font-bold mb-2">Manage Products</h3>
+              <p>View, add, edit or delete your products</p>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-md text-center cursor-pointer menu-item" onclick="navigateTo('orders')">
+              <i class="fas fa-clipboard-list text-5xl text-green-600 mb-4"></i>
+              <h3 class="text-xl font-bold mb-2">View Orders</h3>
+              <p>See orders for your products</p>
+            </div>
+          ` : `
+            <div class="bg-white p-6 rounded-lg shadow-md text-center cursor-pointer menu-item" onclick="navigateTo('marketplace')">
+              <i class="fas fa-store text-5xl text-green-600 mb-4"></i>
+              <h3 class="text-xl font-bold mb-2">Browse Marketplace</h3>
+              <p>Find products from local farmers</p>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-md text-center cursor-pointer menu-item" onclick="navigateTo('order-history')">
+              <i class="fas fa-history text-5xl text-green-600 mb-4"></i>
+              <h3 class="text-xl font-bold mb-2">Order History</h3>
+              <p>View your past orders</p>
+            </div>
+          `}
+          <div class="bg-white p-6 rounded-lg shadow-md text-center cursor-pointer menu-item" onclick="navigateTo('profile')">
+            <i class="fas fa-user text-5xl text-green-600 mb-4"></i>
+            <h3 class="text-xl font-bold mb-2">Profile Settings</h3>
+            <p>Update your account information</p>
+          </div>
+          <div class="bg-white p-6 rounded-lg shadow-md text-center cursor-pointer menu-item" onclick="navigateTo('help')">
+            <i class="fas fa-question-circle text-5xl text-green-600 mb-4"></i>
+            <h3 class="text-xl font-bold mb-2">Help & Support</h3>
+            <p>Get assistance with the platform</p>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderFarmerDashboard() {
+      const farmerProducts = state.data.products.filter(
+        p => p.farmerId === state.data.currentUser.id
+      );
+      
+      elements.content.innerHTML = `
+        <div class="mb-6">
+          <button onclick="navigateTo('menu')" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 mb-4">
+            <i class="fas fa-arrow-left mr-2"></i> Back to Menu
+          </button>
+        </div>
+        <div class="bg-white rounded-lg shadow-lg p-6">
+          <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-bold">Farmer Dashboard</h2>
+            <button onclick="showAddProductForm()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+              <i class="fas fa-plus"></i> Add Product
+            </button>
+          </div>
+          
+          <div id="add-product-form" class="hidden mb-8 p-4 bg-gray-50 rounded-lg">
+            <h3 class="text-xl font-bold mb-4">Add New Product</h3>
+            <form id="product-form" class="space-y-4">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-gray-700 mb-1">Product Name</label>
+                  <input type="text" id="product-name" required
+                    class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500">
+                </div>
+                <div>
+                  <label class="block text-gray-700 mb-1">Quantity</label>
+                  <input type="number" id="product-quantity" required
+                    class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500">
+                </div>
+                <div>
+                  <label class="block text-gray-700 mb-1">Price per Unit</label>
+                  <input type="number" step="0.01" id="product-price" required
+                    class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500">
+                </div>
+                <div>
+                  <label class="block text-gray-700 mb-1">Unit</label>
+                  <select id="product-unit" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500">
+                    <option value="kg">kg</option>
+                    <option value="lb">lb</option>
+                    <option value="unit">unit</option>
+                  </select>
+                </div>
+              </div>
+              <div class="flex space-x-2">
+                <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+                  Save Product
+                </button>
+                <button type="button" onclick="hideAddProductForm()" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+          
+          <h3 class="text-xl font-bold mb-4">Your Products</h3>
+          <div class="overflow-x-auto">
+            <table class="w-full table-auto">
+              <thead class="bg-gray-100">
+                <tr>
+                  <th class="px-4 py-2 text-left">Product</th>
+                  <th class="px-4 py-2 text-left">Quantity</th>
+                  <th class="px-4 py-2 text-left">Price</th>
+                  <th class="px-4 py-2 text-left">Status</th>
+                  <th class="px-4 py-2 text-left">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="farmer-products-list">
+                ${farmerProducts.map(product => `
+                  <tr class="border-b hover:bg-gray-50">
+                    <td class="px-4 py-2">${product.name}</td>
+                    <td class="px-4 py-2">${product.quantity} ${product.unit}</td>
+                    <td class="px-4 py-2">$${product.price}/${product.unit}</td>
+                    <td class="px-4 py-2">
+                      <span class="px-2 py-1 rounded-full text-xs ${product.status === 'Available' ? 'status-available' : 'status-soldout'}">
+                        ${product.status}
+                      </span>
+                    </td>
+                    <td class="px-4 py-2">
+                      <button onclick="editProduct(${product.id})" class="text-blue-500 hover:text-blue-700 mr-2">
+                        <i class="fas fa-edit"></i>
+                      </button>
+                      <button onclick="deleteProduct(${product.id})" class="text-red-500 hover:text-red-700">
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+      
+      document.getElementById('product-form')?.addEventListener('submit', handleProductFormSubmit);
+    }
+
+    function renderBusinessDashboard() {
+      const availableProducts = state.data.products.filter(
+        p => p.status === 'Available'
+      );
+      
+      elements.content.innerHTML = `
+        <div class="mb-6">
+          <button onclick="navigateTo('menu')" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 mb-4">
+            <i class="fas fa-arrow-left mr-2"></i> Back to Menu
+          </button>
+        </div>
+        <div class="bg-white rounded-lg shadow-lg p-6">
+          <h2 class="text-2xl font-bold mb-6">Business Dashboard</h2>
+          
+          <div class="mb-6">
+            <div class="relative">
+              <input type="text" id="product-search" placeholder="Search products..."
+                class="w-full p-2 pl-10 border rounded focus:outline-none focus:ring-2 focus:ring-green-500">
+              <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+            </div>
+          </div>
+          
+          <h3 class="text-xl font-bold mb-4">Available Products</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            ${availableProducts.map(product => `
+              <div class="bg-white border rounded-lg shadow-sm p-4 card-hover">
+                <h4 class="text-lg font-semibold mb-2">${product.name}</h4>
+                <p class="text-gray-600 mb-1"><i class="fas fa-weight-hanging text-green-600 mr-2"></i> ${product.quantity} ${product.unit} available</p>
+                <p class="text-gray-600 mb-3"><i class="fas fa-tag text-green-600 mr-2"></i> $${product.price}/${product.unit}</p>
+                <div class="flex justify-between items-center">
+                  <span class="px-2 py-1 rounded-full text-xs ${product.status === 'Available' ? 'status-available' : 'status-soldout'}">
+                    ${product.status}
+                  </span>
+                  <button onclick="showOrderModal(${product.id})" class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700">
+                    <i class="fas fa-cart-plus mr-1"></i> Order
+                  </button>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+      
+      document.getElementById('product-search')?.addEventListener('input', (e) => {
+        const searchTerm = e.target.value.toLowerCase();
+        const productCards = document.querySelectorAll('.card-hover');
+        
+        productCards.forEach(card => {
+          const productName = card.querySelector('h4').textContent.toLowerCase();
+          if (productName.includes(searchTerm)) {
+            card.style.display = 'block';
+          } else {
+            card.style.display = 'none';
+          }
+        });
+      });
+    }
+
+    function renderProfilePage() {
+      elements.content.innerHTML = `
+        <div class="mb-6">
+          <button onclick="navigateTo('menu')" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 mb-4">
+            <i class="fas fa-arrow-left mr-2"></i> Back to Menu
+          </button>
+        </div>
+        <div class="bg-white rounded-lg shadow-lg p-6 max-w-2xl mx-auto">
+          <h2 class="text-2xl font-bold mb-6">Profile Settings</h2>
+          <form id="profile-form" class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-gray-700 mb-1">Name</label>
+                <input type="text" id="profile-name" value="${state.data.currentUser.name}" required
+                  class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500">
+              </div>
+              <div>
+                <label class="block text-gray-700 mb-1">Email</label>
+                <input type="email" id="profile-email" value="${state.data.currentUser.email}" required
+                  class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500">
+              </div>
+              <div>
+                <label class="block text-gray-700 mb-1">Current Password</label>
+                <input type="password" id="profile-current-password"
+                  class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500">
+              </div>
+              <div>
+                <label class="block text-gray-700 mb-1">New Password</label>
+                <input type="password" id="profile-new-password"
+                  class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500">
+              </div>
+            </div>
+            <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+              Update Profile
+            </button>
+          </form>
+        </div>
+      `;
+      
+      document.getElementById('profile-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        updateProfile();
+      });
+    }
+
+    function renderHelpPage() {
+      elements.content.innerHTML = `
+        <div class="mb-6">
+          <button onclick="navigateTo('menu')" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 mb-4">
+            <i class="fas fa-arrow-left mr-2"></i> Back to Menu
+          </button>
+        </div>
+        <div class="bg-white rounded-lg shadow-lg p-6 max-w-3xl mx-auto">
+          <h2 class="text-2xl font-bold mb-6">Help & Support</h2>
+          <div class="space-y-6">
+            <div>
+              <h3 class="text-xl font-semibold mb-2">Frequently Asked Questions</h3>
+              <div class="space-y-4">
+                <div>
+                  <h4 class="font-bold">How do I add products to my inventory?</h4>
+                  <p class="text-gray-600">Go to the Farmer Dashboard and click the "Add Product" button. Fill in the details and save.</p>
+                </div>
+                <div>
+                  <h4 class="font-bold">How do I place an order?</h4>
+                  <p class="text-gray-600">Browse the marketplace, find the product you want, and click the "Order" button.</p>
+                </div>
+                <div>
+                  <h4 class="font-bold">How can I update my profile information?</h4>
+                  <p class="text-gray-600">Go to the Profile Settings page from the main menu and update your details.</p>
+                </div>
+              </div>
+            </div>
+            <div>
+              <h3 class="text-xl font-semibold mb-2">Contact Support</h3>
+              <p class="text-gray-600">If you need further assistance, please contact our support team at support@farmlink.com or call 1-800-FARMLINK.</p>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // Navigation function
+    function navigateTo(view) {
+      state.currentView = view;
+      renderUI();
+    }
+
+    // Product Management Functions
+    function showAddProductForm() {
+      document.getElementById('add-product-form').classList.remove('hidden');
+      document.getElementById('product-form').reset();
+      document.getElementById('product-form').dataset.mode = 'add';
+    }
+
+    function hideAddProductForm() {
+      document.getElementById('add-product-form').classList.add('hidden');
+    }
+
+    function handleProductFormSubmit(e) {
+      e.preventDefault();
+      
+      const form = e.target;
+      const mode = form.dataset.mode;
+      
+      const productData = {
+        name: document.getElementById('product-name').value,
+        quantity: parseFloat(document.getElementById('product-quantity').value),
+        price: parseFloat(document.getElementById('product-price').value),
+        unit: document.getElementById('product-unit').value,
+        farmerId: state.data.currentUser.id,
+        status: 'Available'
+      };
+      
+      if (mode === 'add') {
+        // Add new product
+        productData.id = ++state.data.lastProductId;
+        state.data.products.push(productData);
+      } else if (mode === 'edit') {
+        // Update existing product
+        const productId = parseInt(form.dataset.productId);
+        const productIndex = state.data.products.findIndex(p => p.id === productId);
+        if (productIndex !== -1) {
+          productData.id = productId;
+          state.data.products[productIndex] = productData;
+        }
+      }
+      
+      FarmLinkStorage.save(state.data);
+      renderFarmerDashboard();
+    }
+
+    function editProduct(productId) {
+      const product = state.data.products.find(p => p.id === productId);
+      if (!product) return;
+      
+      document.getElementById('add-product-form').classList.remove('hidden');
+      document.getElementById('product-name').value = product.name;
+      document.getElementById('product-quantity').value = product.quantity;
+      document.getElementById('product-price').value = product.price;
+      document.getElementById('product-unit').value = product.unit;
+      
+      const form = document.getElementById('product-form');
+      form.dataset.mode = 'edit';
+      form.dataset.productId = productId;
+    }
+
+    function deleteProduct(productId) {
+      if (confirm('Are you sure you want to delete this product?')) {
+        state.data.products = state.data.products.filter(p => p.id !== productId);
+        FarmLinkStorage.save(state.data);
+        renderFarmerDashboard();
+      }
+    }
+
+    // Profile Management
+    function updateProfile() {
+      const name = document.getElementById('profile-name').value;
+      const email = document.getElementById('profile-email').value;
+      const currentPassword = document.getElementById('profile-current-password').value;
+      const newPassword = document.getElementById('profile-new-password').value;
+      
+      // Find current user in data
+      const userIndex = state.data.users.findIndex(u => u.id === state.data.currentUser.id);
+      
+      if (userIndex !== -1) {
+        // Update basic info
+        state.data.users[userIndex].name = name;
+        state.data.users[userIndex].email = email;
+        
+        // Update password if provided
+        if (currentPassword && newPassword) {
+          if (state.data.users[userIndex].password === currentPassword) {
+            state.data.users[userIndex].password = newPassword;
+          } else {
+            alert('Current password is incorrect');
+            return;
+          }
         }
         
-        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `farmlink-data-${new Date().toISOString().slice(0,10)}.json`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
+        // Update current user in state
+        state.data.currentUser = state.data.users[userIndex];
         
-        this.showToast('Data exported successfully');
+        // Save to storage
+        FarmLinkStorage.save(state.data);
+        
+        alert('Profile updated successfully!');
+        navigateTo('menu');
+      }
+    }
+
+    // Order Management Functions
+    function showOrderModal(productId) {
+      const product = state.data.products.find(p => p.id === productId);
+      if (!product) return;
+      
+      elements.content.innerHTML += `
+        <div id="order-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
+            <div class="flex justify-between items-center mb-4">
+              <h3 class="text-xl font-bold">Order ${product.name}</h3>
+              <button onclick="closeOrderModal()" class="text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+            <form id="order-form" class="space-y-4">
+              <input type="hidden" id="order-product-id" value="${product.id}">
+              <div>
+                <label class="block text-gray-700 mb-1">Quantity (${product.unit})</label>
+                <input type="number" id="order-quantity" min="1" max="${product.quantity}" required
+                  class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500">
+              </div>
+              <div>
+                <label class="block text-gray-700 mb-1">Delivery Date</label>
+                <input type="date" id="order-date" required
+                  class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500">
+              </div>
+              <div>
+                <label class="block text-gray-700 mb-1">Special Instructions</label>
+                <textarea id="order-notes"
+                  class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500"></textarea>
+              </div>
+              <button type="submit" class="w-full bg-green-600 text-white p-2 rounded hover:bg-green-700">
+                Place Order
+              </button>
+            </form>
+          </div>
+        </div>
+      `;
+      
+      document.getElementById('order-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        placeOrder(productId);
+      });
+    }
+
+    function closeOrderModal() {
+      document.getElementById('order-modal')?.remove();
+    }
+
+    function placeOrder(productId) {
+      const product = state.data.products.find(p => p.id === productId);
+      if (!product) return;
+      
+      const quantity = parseFloat(document.getElementById('order-quantity').value);
+      const deliveryDate = document.getElementById('order-date').value;
+      const notes = document.getElementById('order-notes').value;
+      
+      if (quantity > product.quantity) {
+        alert('Order quantity exceeds available stock');
+        return;
       }
       
-      static importData(file, callback) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          try {
-            const data = JSON.parse(e.target.result);
-            if (data && (data.crops || data.orders)) {
-              this.save(data);
-              callback(true);
-              this.showToast('Data imported successfully');
-            } else {
-              this.showToast('Invalid data format', 'error');
-              callback(false);
-            }
-          } catch (e) {
-            console.error('Failed to parse imported file:', e);
-            this.showToast('Failed to parse file', 'error');
-            callback(false);
-          }
-        };
-        reader.onerror = () => {
-          this.showToast('Error reading file', 'error');
-          callback(false);
-        };
-        reader.readAsText(file);
+      // Create new order
+      const newOrder = {
+        id: ++state.data.lastOrderId,
+        productId: product.id,
+        businessId: state.data.currentUser.id,
+        quantity: quantity,
+        totalPrice: quantity * product.price,
+        orderDate: new Date().toISOString(),
+        deliveryDate: deliveryDate,
+        status: 'Pending',
+        notes: notes
+      };
+      
+      // Update product quantity
+      product.quantity -= quantity;
+      if (product.quantity <= 0) {
+        product.status = 'Sold Out';
       }
       
-      static showToast(message, type = 'success') {
-        const toast = document.getElementById('toast');
-        const toastMessage = document.getElementById('toastMessage');
-        
-        toastMessage.textContent = message;
-        
-        // Set background color based on type
-        toast.className = `fixed bottom-4 right-4 bg-${type === 'success' ? 'green' : 'red'}-100 text-${type === 'success' ? 'green' : 'red'}-800 px-4 py-3 rounded-lg shadow-xl flex items-center gap-3`;
-        
-        toast.classList.remove('hidden');
-        
-        // Auto-hide after 3 seconds
-        setTimeout(() => {
-          toast.classList.add('hidden');
-        }, 3000);
+      state.data.orders.push(newOrder);
+      FarmLinkStorage.save(state.data);
+      closeOrderModal();
+      renderBusinessDashboard();
+      alert('Order placed successfully!');
+    }
+
+    // Modal Functions
+    function showLoginModal() {
+      elements.loginModal.classList.remove('hidden');
+      hideLoginError();
+    }
+
+    function hideLoginModal() {
+      elements.loginModal.classList.add('hidden');
+    }
+
+    // Event Listeners
+    elements.loginForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const email = document.getElementById('login-email').value;
+      const password = document.getElementById('login-password').value;
+      const role = document.getElementById('login-role').value;
+      
+      if (loginUser(email, password, role)) {
+        // The loginUser function now handles the navigation
+      } else {
+        showLoginError('Invalid login credentials. Please try again.');
+      }
+    });
+
+    elements.closeLogin.addEventListener('click', hideLoginModal);
+
+    // Initial Render
+    function renderUI() {
+      renderAuthNav();
+      
+      if (state.data.currentUser) {
+        switch(state.currentView) {
+          case 'menu':
+            renderMenuPage();
+            break;
+          case 'farmer-dashboard':
+            renderFarmerDashboard();
+            break;
+          case 'marketplace':
+            renderBusinessDashboard();
+            break;
+          case 'profile':
+            renderProfilePage();
+            break;
+          case 'help':
+            renderHelpPage();
+            break;
+          default:
+            renderMenuPage();
+        }
+      } else {
+        renderHomeView();
       }
     }
 
     // Initialize the app
-    document.addEventListener('DOMContentLoaded', () => {
-      // Load data from localStorage
-      const loadData = () => {
-        const data = FarmData.load();
-        if (data) {
-          // Initialize your app with the loaded data
-          console.log('Loaded data:', data);
-          // Update UI accordingly
-        } else {
-          console.log('No saved data found');
-        }
-      };
-      
-      // Set up event listeners
-      document.getElementById('btnExportData').addEventListener('click', FarmData.exportData);
-      document.getElementById('btnImportData').addEventListener('click', () => {
-        document.getElementById('importModal').classList.remove('hidden');
-      });
-      document.getElementById('importModalClose').addEventListener('click', () => {
-        document.getElementById('importModal').classList.add('hidden');
-      });
-      document.getElementById('btnImportCancel').addEventListener('click', () => {
-        document.getElementById('importModal').classList.add('hidden');
-      });
-      document.getElementById('btnImportConfirm').addEventListener('click', () => {
-        const fileInput = document.getElementById('importFile');
-        if (fileInput.files.length > 0) {
-          FarmData.importData(fileInput.files[0], (success) => {
-            if (success) {
-              document.getElementById('importModal').classList.add('hidden');
-              loadData(); // Reload data after successful import
-            }
-          });
-        } else {
-          FarmData.showToast('Please select a file first', 'error');
-        }
-      });
-      document.getElementById('btnClearStorage').addEventListener('click', () => {
-        if (confirm('Are you sure you want to clear all data? This cannot be undone.')) {
-          FarmData.clear();
-          FarmData.showToast('All data cleared');
-          // Reset UI to initial state
-        }
-      });
-      document.getElementById('btnBackup').addEventListener('click', FarmData.exportData);
-      
-      // Initial load
-      loadData();
+    renderUI();
+
+    // Add event listener for login button in home page
+    document.addEventListener('click', function(e) {
+      if (e.target && e.target.id === 'home-login-btn') {
+        showLoginModal();
+      }
     });
   </script>
 </body>
