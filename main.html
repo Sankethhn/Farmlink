@@ -3,820 +3,1849 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FarmLink - Farm to Business Platform</title>
-    <meta name="description" content="Direct marketplace connecting farmers with businesses. Source fresh agricultural products directly from local farmers.">
-    
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
-    
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: {
-                            DEFAULT: 'hsl(142 76% 36%)',
-                            foreground: 'hsl(355.7 100% 97.3%)',
-                            hover: 'hsl(142 76% 32%)',
-                            light: 'hsl(142 76% 45%)',
-                        },
-                        secondary: {
-                            DEFAULT: 'hsl(60 4.8% 95.9%)',
-                            foreground: 'hsl(24 9.8% 10%)',
-                        },
-                        accent: {
-                            DEFAULT: 'hsl(43 74% 66%)',
-                            foreground: 'hsl(24 9.8% 10%)',
-                        },
-                        muted: {
-                            DEFAULT: 'hsl(60 4.8% 95.9%)',
-                            foreground: 'hsl(25 5.3% 44.7%)',
-                        },
-                        card: {
-                            DEFAULT: 'hsl(0 0% 100%)',
-                            foreground: 'hsl(240 10% 3.9%)',
-                        },
-                        border: 'hsl(20 5.9% 90%)',
-                        input: 'hsl(20 5.9% 90%)',
-                        ring: 'hsl(142 76% 36%)',
-                    },
-                    animation: {
-                        'fade-up': 'fadeUp 0.5s ease-out',
-                        'scale-in': 'scaleIn 0.2s ease-out',
-                    },
-                    keyframes: {
-                        fadeUp: {
-                            '0%': { opacity: '0', transform: 'translateY(10px)' },
-                            '100%': { opacity: '1', transform: 'translateY(0)' }
-                        },
-                        scaleIn: {
-                            '0%': { opacity: '0', transform: 'scale(0.9)' },
-                            '100%': { opacity: '1', transform: 'scale(1)' }
-                        }
-                    }
-                }
+    <title>FarmLink - Connect Farmers with Businesses | Agricultural Marketplace</title>
+    <meta name="description" content="Direct marketplace connecting farmers with businesses. Source fresh agricultural products directly from local farmers. Eliminate middlemen and ensure fair prices for everyone.">
+    <meta name="author" content="FarmLink">
+    <meta name="keywords" content="agriculture, farming, marketplace, direct sales, local farmers, business sourcing, fresh produce">
+    <meta property="og:title" content="FarmLink - Agricultural Marketplace Platform">
+    <meta property="og:description" content="Connect farmers directly with businesses. Source fresh, high-quality agricultural products and eliminate middlemen for fair pricing.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@lovable_dev">
+    <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png">
+    <style>
+        /* Reset and base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* Color palette */
+            --primary: 142 70% 49%;
+            --primary-foreground: 0 0% 98%;
+            --secondary: 210 40% 98%;
+            --secondary-foreground: 222.2 84% 4.9%;
+            --muted: 210 40% 96%;
+            --muted-foreground: 215.4 16.3% 46.9%;
+            --accent: 210 40% 96%;
+            --accent-foreground: 222.2 84% 4.9%;
+            --destructive: 0 84.2% 60.2%;
+            --destructive-foreground: 210 40% 98%;
+            --border: 214.3 31.8% 91.4%;
+            --input: 214.3 31.8% 91.4%;
+            --ring: 142 70% 49%;
+            --background: 0 0% 100%;
+            --foreground: 222.2 84% 4.9%;
+            --card: 0 0% 100%;
+            --card-foreground: 222.2 84% 4.9%;
+            --popover: 0 0% 100%;
+            --popover-foreground: 222.2 84% 4.9%;
+            
+            /* Gradients */
+            --gradient-primary: linear-gradient(135deg, hsl(142 70% 49%), hsl(142 70% 65%));
+            --gradient-hero: linear-gradient(135deg, hsl(142 70% 49%) 0%, hsl(142 70% 35%) 100%);
+            
+            /* Shadows */
+            --shadow-strong: 0 10px 40px -10px hsl(142 70% 49% / 0.4);
+            --shadow-elegant: 0 10px 30px -10px hsl(142 70% 49% / 0.3);
+            
+            /* Animations */
+            --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: hsl(var(--background));
+            color: hsl(var(--foreground));
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: var(--transition-smooth);
+            cursor: pointer;
+            border: none;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+        }
+
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: hsl(var(--primary-foreground));
+            box-shadow: var(--shadow-elegant);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-strong);
+        }
+
+        .btn-outline {
+            border: 1px solid hsl(var(--border));
+            background: transparent;
+            color: hsl(var(--foreground));
+        }
+
+        .btn-outline:hover {
+            background: hsl(var(--accent));
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: hsl(var(--muted-foreground));
+        }
+
+        .btn-ghost:hover {
+            background: hsl(var(--accent));
+            color: hsl(var(--accent-foreground));
+        }
+
+        .card {
+            background: hsl(var(--card));
+            border: 1px solid hsl(var(--border));
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            transition: var(--transition-smooth);
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-elegant);
+        }
+
+        .input {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid hsl(var(--border));
+            border-radius: 0.5rem;
+            background: hsl(var(--background));
+            color: hsl(var(--foreground));
+            font-size: 0.875rem;
+        }
+
+        .input:focus {
+            outline: none;
+            border-color: hsl(var(--ring));
+            box-shadow: 0 0 0 2px hsl(var(--ring) / 0.2);
+        }
+
+        .select {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid hsl(var(--border));
+            border-radius: 0.5rem;
+            background: hsl(var(--background));
+            color: hsl(var(--foreground));
+            font-size: 0.875rem;
+        }
+
+        .textarea {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid hsl(var(--border));
+            border-radius: 0.5rem;
+            background: hsl(var(--background));
+            color: hsl(var(--foreground));
+            font-size: 0.875rem;
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: hsl(var(--card));
+            border-radius: 0.75rem;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .header {
+            background: var(--gradient-primary);
+            color: hsl(var(--primary-foreground));
+            box-shadow: var(--shadow-strong);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .hero {
+            background: var(--gradient-hero);
+            color: hsl(var(--primary-foreground));
+            padding: 4rem 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .grid-4 {
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        @media (max-width: 768px) {
+            .grid-2,
+            .grid-3,
+            .grid-4 {
+                grid-template-columns: 1fr;
             }
         }
-    </script>
-    
-    <style>
-        .gradient-primary {
-            background: linear-gradient(135deg, hsl(142 76% 36%), hsl(142 76% 45%));
+
+        .text-center {
+            text-align: center;
         }
-        
-        .gradient-hero {
-            background: linear-gradient(135deg, hsl(142 76% 36%), hsl(120 61% 50%));
+
+        .text-sm {
+            font-size: 0.875rem;
         }
-        
-        .card-hover {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+        .text-lg {
+            font-size: 1.125rem;
         }
-        
-        .card-hover:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 25px 50px -12px hsl(142 76% 36% / 0.25);
+
+        .text-xl {
+            font-size: 1.25rem;
         }
-        
-        .shadow-soft {
-            box-shadow: 0 2px 8px -2px hsl(142 76% 36% / 0.1);
+
+        .text-2xl {
+            font-size: 1.5rem;
         }
-        
-        .shadow-medium {
-            box-shadow: 0 8px 25px -5px hsl(142 76% 36% / 0.15);
+
+        .text-3xl {
+            font-size: 1.875rem;
         }
-        
-        .shadow-strong {
-            box-shadow: 0 25px 50px -12px hsl(142 76% 36% / 0.25);
+
+        .text-4xl {
+            font-size: 2.25rem;
         }
-        
-        .transition-spring {
-            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+        .font-bold {
+            font-weight: 700;
         }
-        
-        .status-available {
-            background-color: #d1fae5;
-            color: #065f46;
+
+        .font-semibold {
+            font-weight: 600;
         }
-        
-        .status-soldout {
-            background-color: #fee2e2;
-            color: #b91c1c;
+
+        .mb-2 {
+            margin-bottom: 0.5rem;
         }
-        
-        .hero-bg {
-            background-image: url('https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80');
-            background-size: cover;
-            background-position: center;
+
+        .mb-4 {
+            margin-bottom: 1rem;
         }
-        
-        .animate-fade-up {
-            animation: fadeUp 0.5s ease-out forwards;
+
+        .mb-6 {
+            margin-bottom: 1.5rem;
         }
-        
-        .animate-scale-in {
-            animation: scaleIn 0.2s ease-out forwards;
+
+        .mb-8 {
+            margin-bottom: 2rem;
         }
-        
-        .backdrop-blur {
-            backdrop-filter: blur(8px);
+
+        .mt-4 {
+            margin-top: 1rem;
         }
-        
+
+        .mt-6 {
+            margin-top: 1.5rem;
+        }
+
+        .p-4 {
+            padding: 1rem;
+        }
+
+        .p-6 {
+            padding: 1.5rem;
+        }
+
+        .py-4 {
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+        }
+
+        .py-8 {
+            padding-top: 2rem;
+            padding-bottom: 2rem;
+        }
+
         .hidden {
             display: none;
         }
+
+        .flex {
+            display: flex;
+        }
+
+        .items-center {
+            align-items: center;
+        }
+
+        .justify-between {
+            justify-content: space-between;
+        }
+
+        .space-x-2 > * + * {
+            margin-left: 0.5rem;
+        }
+
+        .space-x-4 > * + * {
+            margin-left: 1rem;
+        }
+
+        .space-y-4 > * + * {
+            margin-top: 1rem;
+        }
+
+        .space-y-6 > * + * {
+            margin-top: 1.5rem;
+        }
+
+        .w-full {
+            width: 100%;
+        }
+
+        .h-full {
+            height: 100%;
+        }
+
+        .min-h-screen {
+            min-height: 100vh;
+        }
+
+        .rounded-lg {
+            border-radius: 0.5rem;
+        }
+
+        .icon {
+            width: 1.5rem;
+            height: 1.5rem;
+            fill: currentColor;
+        }
+
+        .icon-lg {
+            width: 3rem;
+            height: 3rem;
+        }
+
+        .toast {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            background: hsl(var(--card));
+            border: 1px solid hsl(var(--border));
+            border-radius: 0.5rem;
+            padding: 1rem;
+            box-shadow: var(--shadow-elegant);
+            z-index: 1001;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast-success {
+            border-left: 4px solid hsl(142 70% 49%);
+        }
+
+        .toast-error {
+            border-left: 4px solid hsl(var(--destructive));
+        }
+
+        .animate-fade-up {
+            animation: fadeUp 0.6s ease-out;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            border-radius: 9999px;
+            padding: 0.25rem 0.625rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            transition: var(--transition-smooth);
+        }
+
+        .badge-success {
+            background: hsl(142 70% 49% / 0.1);
+            color: hsl(142 70% 49%);
+        }
+
+        .badge-warning {
+            background: hsl(45 93% 47% / 0.1);
+            color: hsl(45 93% 47%);
+        }
+
+        .badge-error {
+            background: hsl(var(--destructive) / 0.1);
+            color: hsl(var(--destructive));
+        }
+
+        .page {
+            display: none;
+            min-height: 100vh;
+            padding: 2rem 0;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .dashboard-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: hsl(var(--card));
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            border: 1px solid hsl(var(--border));
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: hsl(var(--primary));
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: hsl(var(--muted-foreground));
+            font-size: 0.875rem;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .product-card {
+            background: hsl(var(--card));
+            border: 1px solid hsl(var(--border));
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            transition: var(--transition-smooth);
+        }
+
+        .product-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-elegant);
+        }
+
+        .order-item {
+            background: hsl(var(--card));
+            border: 1px solid hsl(var(--border));
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .accordion {
+            border: 1px solid hsl(var(--border));
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+
+        .accordion-item {
+            border-bottom: 1px solid hsl(var(--border));
+        }
+
+        .accordion-item:last-child {
+            border-bottom: none;
+        }
+
+        .accordion-trigger {
+            width: 100%;
+            padding: 1rem;
+            text-align: left;
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 500;
+        }
+
+        .accordion-trigger:hover {
+            background: hsl(var(--muted));
+        }
+
+        .accordion-content {
+            padding: 0 1rem 1rem;
+            display: none;
+            color: hsl(var(--muted-foreground));
+        }
+
+        .accordion-content.show {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .alert-info {
+            background: hsl(var(--primary) / 0.1);
+            border: 1px solid hsl(var(--primary) / 0.2);
+            color: hsl(var(--primary));
+        }
+
+        .search-box {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .search-box input {
+            padding-left: 2.5rem;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: hsl(var(--muted-foreground));
+        }
     </style>
 </head>
-<body class="bg-gray-50 font-sans antialiased">
+<body>
     <!-- Header -->
-    <header class="gradient-primary text-white shadow-lg sticky top-0 z-50">
-        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
-            <div class="flex items-center space-x-3">
-                <i data-lucide="sprout" class="w-8 h-8"></i>
-                <h1 class="text-2xl font-bold">FarmLink</h1>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/>
+                        <path d="m9 12 2 2 4-4"/>
+                    </svg>
+                    <h1 class="text-2xl font-bold">FarmLink</h1>
+                </div>
+                <nav id="nav-buttons">
+                    <button class="btn btn-outline" onclick="showLoginModal()">Login</button>
+                </nav>
             </div>
-            <nav id="auth-nav">
-                <button id="login-btn" class="border border-white/20 text-white hover:bg-white/10 px-4 py-2 rounded-md transition-all">
-                    Login
-                </button>
-            </nav>
         </div>
     </header>
 
     <!-- Main Content -->
     <main id="main-content">
-        <!-- Home Page -->
-        <div id="home-page" class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+        <!-- Landing Page -->
+        <div id="landing-page" class="page active">
             <!-- Hero Section -->
-            <div class="relative h-screen flex items-center justify-center overflow-hidden hero-bg">
-                <div class="absolute inset-0 bg-black/40"></div>
-                
-                <div class="relative z-10 text-center text-white px-4 max-w-4xl mx-auto animate-fade-up">
-                    <h1 class="text-5xl md:text-7xl font-bold mb-6 drop-shadow-lg">
-                        Connecting Farmers with Businesses
-                    </h1>
-                    <p class="text-xl md:text-2xl mb-8 drop-shadow-md max-w-3xl mx-auto">
-                        A direct marketplace for agricultural products, eliminating middlemen and ensuring fair prices for everyone
-                    </p>
-                    <button id="hero-login-btn" class="bg-primary-DEFAULT hover:bg-primary-hover text-white px-8 py-4 text-lg rounded-lg shadow-strong transition-spring inline-flex items-center">
-                        Get Started
-                        <i data-lucide="arrow-right" class="ml-2 w-5 h-5"></i>
-                    </button>
+            <section class="hero">
+                <div class="container">
+                    <div class="hero-content animate-fade-up">
+                        <h1 class="text-4xl font-bold mb-6">Connect Farmers with Businesses</h1>
+                        <p class="text-xl mb-8">Direct marketplace eliminating middlemen for fair prices and fresh products</p>
+                        <div class="space-x-4">
+                            <button class="btn btn-primary" onclick="showLoginModal()">Get Started</button>
+                            <button class="btn btn-outline">Learn More</button>
+                        </div>
+                    </div>
                 </div>
-            </div>
+            </section>
 
             <!-- Features Section -->
-            <div class="container mx-auto px-4 py-16 -mt-32 relative z-20">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-                    <div class="bg-white/95 backdrop-blur rounded-lg p-8 text-center card-hover shadow-soft animate-fade-up">
-                        <div class="w-16 h-16 mx-auto mb-4 gradient-primary rounded-full flex items-center justify-center">
-                            <i data-lucide="tractor" class="w-8 h-8 text-white"></i>
-                        </div>
-                        <h3 class="text-xl font-bold mb-3">For Farmers</h3>
-                        <p class="text-gray-600">
-                            Sell your products directly to businesses without middlemen. Get better prices and build lasting relationships.
-                        </p>
+            <section class="py-8">
+                <div class="container">
+                    <div class="text-center mb-8">
+                        <h2 class="text-3xl font-bold mb-4">Why Choose FarmLink?</h2>
+                        <p class="text-lg text-muted-foreground">Connecting the agricultural community for mutual growth</p>
                     </div>
-
-                    <div class="bg-white/95 backdrop-blur rounded-lg p-8 text-center card-hover shadow-soft animate-fade-up" style="animation-delay: 0.2s">
-                        <div class="w-16 h-16 mx-auto mb-4 gradient-primary rounded-full flex items-center justify-center">
-                            <i data-lucide="store" class="w-8 h-8 text-white"></i>
+                    <div class="grid grid-3">
+                        <div class="card text-center animate-fade-up">
+                            <svg class="icon icon-lg mx-auto mb-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/>
+                                <path d="m9 12 2 2 4-4"/>
+                            </svg>
+                            <h3 class="text-xl font-semibold mb-2">Direct Trading</h3>
+                            <p class="text-muted-foreground">Eliminate middlemen and trade directly for better prices and quality</p>
                         </div>
-                        <h3 class="text-xl font-bold mb-3">For Businesses</h3>
-                        <p class="text-gray-600">
-                            Source fresh, high-quality products directly from local farmers. Know your supply chain and support local agriculture.
-                        </p>
+                        <div class="card text-center animate-fade-up">
+                            <svg class="icon icon-lg mx-auto mb-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2v20m8-10H4"/>
+                            </svg>
+                            <h3 class="text-xl font-semibold mb-2">Easy Management</h3>
+                            <p class="text-muted-foreground">Simple tools to manage products, orders, and communications</p>
+                        </div>
+                        <div class="card text-center animate-fade-up">
+                            <svg class="icon icon-lg mx-auto mb-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <polyline points="12,6 12,12 16,14"/>
+                            </svg>
+                            <h3 class="text-xl font-semibold mb-2">Real-time Updates</h3>
+                            <p class="text-muted-foreground">Stay updated with order status and inventory changes</p>
+                        </div>
                     </div>
+                </div>
+            </section>
+        </div>
 
-                    <div class="bg-white/95 backdrop-blur rounded-lg p-8 text-center card-hover shadow-soft animate-fade-up" style="animation-delay: 0.4s">
-                        <div class="w-16 h-16 mx-auto mb-4 gradient-primary rounded-full flex items-center justify-center">
-                            <i data-lucide="trending-up" class="w-8 h-8 text-white"></i>
-                        </div>
-                        <h3 class="text-xl font-bold mb-3">Better Prices</h3>
-                        <p class="text-gray-600">
-                            Fair pricing for both farmers and businesses. No hidden fees, no complicated commission structures.
-                        </p>
+        <!-- Dashboard -->
+        <div id="dashboard-page" class="page">
+            <div class="container">
+                <div class="flex items-center justify-between mb-8">
+                    <div>
+                        <h1 class="text-3xl font-bold mb-2">Dashboard</h1>
+                        <p class="text-muted-foreground">Welcome back, <span id="user-name">User</span></p>
+                    </div>
+                    <button class="btn btn-ghost" onclick="showMenu()">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="3" y1="6" x2="21" y2="6"/>
+                            <line x1="3" y1="12" x2="21" y2="12"/>
+                            <line x1="3" y1="18" x2="21" y2="18"/>
+                        </svg>
+                        Menu
+                    </button>
+                </div>
+
+                <div class="dashboard-stats">
+                    <div class="stat-card">
+                        <div class="stat-number" id="total-products">0</div>
+                        <div class="stat-label">Total Products</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="active-orders">0</div>
+                        <div class="stat-label">Active Orders</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="total-sales">$0</div>
+                        <div class="stat-label">Total Sales</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="satisfied-customers">0</div>
+                        <div class="stat-label">Satisfied Customers</div>
                     </div>
                 </div>
 
-                <div class="text-center">
-                    <div class="max-w-2xl mx-auto bg-white/95 backdrop-blur rounded-lg p-8 shadow-medium animate-fade-up" style="animation-delay: 0.6s">
-                        <h2 class="text-2xl font-bold mb-4">Ready to Transform Agriculture?</h2>
-                        <p class="text-gray-600 mb-6">
-                            Join thousands of farmers and businesses already using FarmLink to create a more sustainable and profitable agricultural ecosystem.
-                        </p>
-                        <button id="cta-login-btn" class="bg-primary-DEFAULT hover:bg-primary-hover text-white px-6 py-3 rounded-lg transition-all">
-                            Start Your Journey
-                        </button>
+                <div class="grid grid-2">
+                    <div class="card">
+                        <h3 class="text-xl font-semibold mb-4">Recent Orders</h3>
+                        <div id="recent-orders">
+                            <p class="text-muted-foreground">No recent orders</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3 class="text-xl font-semibold mb-4">Quick Actions</h3>
+                        <div class="space-y-4">
+                            <button class="btn btn-primary w-full" onclick="showAddProduct()">Add New Product</button>
+                            <button class="btn btn-outline w-full" onclick="showMarketplace()">View Marketplace</button>
+                            <button class="btn btn-outline w-full" onclick="showOrders()">Manage Orders</button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Menu Page -->
-        <div id="menu-page" class="hidden min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-            <div class="container mx-auto px-4 py-16">
-                <div class="text-center mb-12 animate-fade-up">
-                    <h1 class="text-4xl font-bold mb-4">Welcome, <span id="user-name">User</span></h1>
-                    <p class="text-xl text-gray-600">What would you like to do today?</p>
+        <div id="menu-page" class="page">
+            <div class="container">
+                <div class="flex items-center justify-between mb-8">
+                    <h1 class="text-3xl font-bold">Menu</h1>
+                    <button class="btn btn-ghost" onclick="showDashboard()">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="19" y1="12" x2="5" y2="12"/>
+                            <polyline points="12,19 5,12 12,5"/>
+                        </svg>
+                        Back
+                    </button>
                 </div>
 
-                <div id="menu-items" class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+                <div class="grid grid-3" id="menu-options">
                     <!-- Menu items will be populated by JavaScript -->
                 </div>
             </div>
         </div>
 
-        <!-- Farmer Dashboard -->
-        <div id="farmer-dashboard" class="hidden min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-            <div class="container mx-auto px-4 py-8">
-                <button id="farmer-back-btn" class="mb-6 text-gray-600 hover:text-gray-800 flex items-center">
-                    <i data-lucide="arrow-left" class="mr-2 w-4 h-4"></i>
-                    Back to Menu
-                </button>
+        <!-- Marketplace -->
+        <div id="marketplace-page" class="page">
+            <div class="container">
+                <div class="flex items-center justify-between mb-8">
+                    <h1 class="text-3xl font-bold">Marketplace</h1>
+                    <button class="btn btn-ghost" onclick="showMenu()">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="19" y1="12" x2="5" y2="12"/>
+                            <polyline points="12,19 5,12 12,5"/>
+                        </svg>
+                        Back
+                    </button>
+                </div>
 
-                <div class="bg-white rounded-lg shadow-medium p-6 animate-fade-up">
-                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-                        <h2 class="text-3xl font-bold">Farmer Dashboard</h2>
-                        <button id="add-product-btn" class="bg-primary-DEFAULT hover:bg-primary-hover text-white px-4 py-2 rounded-lg flex items-center">
-                            <i data-lucide="plus" class="mr-2 w-4 h-4"></i>
-                            Add Product
+                <div class="search-box">
+                    <input type="text" class="input" placeholder="Search products..." id="product-search">
+                    <svg class="icon search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"/>
+                        <path d="m21 21-4.35-4.35"/>
+                    </svg>
+                </div>
+
+                <div class="product-grid" id="product-list">
+                    <!-- Products will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Manage Products -->
+        <div id="manage-products-page" class="page">
+            <div class="container">
+                <div class="flex items-center justify-between mb-8">
+                    <h1 class="text-3xl font-bold">Manage Products</h1>
+                    <div class="space-x-4">
+                        <button class="btn btn-primary" onclick="showAddProductForm()">Add Product</button>
+                        <button class="btn btn-ghost" onclick="showMenu()">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="19" y1="12" x2="5" y2="12"/>
+                                <polyline points="12,19 5,12 12,5"/>
+                            </svg>
+                            Back
                         </button>
                     </div>
+                </div>
 
-                    <!-- Add Product Form -->
-                    <div id="product-form-container" class="hidden mb-8 bg-gray-50 rounded-lg p-6 animate-scale-in">
-                        <h3 class="text-xl font-bold mb-4">Add New Product</h3>
-                        <form id="product-form" class="space-y-4">
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-gray-700 mb-1">Product Name</label>
-                                    <input type="text" id="product-name" required class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-DEFAULT">
-                                </div>
-                                <div>
-                                    <label class="block text-gray-700 mb-1">Quantity</label>
-                                    <input type="number" id="product-quantity" required class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-DEFAULT">
-                                </div>
-                                <div>
-                                    <label class="block text-gray-700 mb-1">Price per Unit ($)</label>
-                                    <input type="number" step="0.01" id="product-price" required class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-DEFAULT">
-                                </div>
-                                <div>
-                                    <label class="block text-gray-700 mb-1">Unit</label>
-                                    <select id="product-unit" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-DEFAULT">
-                                        <option value="kg">kg</option>
-                                        <option value="lb">lb</option>
-                                        <option value="unit">unit</option>
-                                        <option value="box">box</option>
-                                    </select>
-                                </div>
+                <div class="product-grid" id="farmer-products">
+                    <!-- Farmer's products will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- View Orders -->
+        <div id="orders-page" class="page">
+            <div class="container">
+                <div class="flex items-center justify-between mb-8">
+                    <h1 class="text-3xl font-bold">Orders</h1>
+                    <button class="btn btn-ghost" onclick="showMenu()">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="19" y1="12" x2="5" y2="12"/>
+                            <polyline points="12,19 5,12 12,5"/>
+                        </svg>
+                        Back
+                    </button>
+                </div>
+
+                <div id="orders-list">
+                    <!-- Orders will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Settings -->
+        <div id="profile-page" class="page">
+            <div class="container">
+                <div class="flex items-center justify-between mb-8">
+                    <h1 class="text-3xl font-bold">Profile Settings</h1>
+                    <button class="btn btn-ghost" onclick="showMenu()">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="19" y1="12" x2="5" y2="12"/>
+                            <polyline points="12,19 5,12 12,5"/>
+                        </svg>
+                        Back
+                    </button>
+                </div>
+
+                <div class="grid grid-2">
+                    <div class="card">
+                        <h3 class="text-xl font-semibold mb-4">Account Information</h3>
+                        <form id="profile-form" class="space-y-4">
+                            <div class="form-group">
+                                <label class="form-label" for="profile-name">Display Name</label>
+                                <input type="text" class="input" id="profile-name" required>
                             </div>
-                            <div class="flex space-x-2">
-                                <button type="submit" class="bg-primary-DEFAULT hover:bg-primary-hover text-white px-4 py-2 rounded-lg">
-                                    Save Product
-                                </button>
-                                <button type="button" id="cancel-product-btn" class="border border-gray-300 text-gray-700 hover:bg-gray-50 px-4 py-2 rounded-lg">
-                                    Cancel
-                                </button>
+                            <div class="form-group">
+                                <label class="form-label" for="profile-email">Email</label>
+                                <input type="email" class="input" id="profile-email" disabled>
                             </div>
+                            <div class="form-group">
+                                <label class="form-label" for="profile-role">Role</label>
+                                <input type="text" class="input" id="profile-role" disabled>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-full">Update Profile</button>
                         </form>
                     </div>
-
-                    <!-- Products List -->
-                    <div>
-                        <h3 class="text-xl font-bold mb-4">Your Products</h3>
-                        <div id="products-list" class="space-y-4">
-                            <!-- Products will be populated by JavaScript -->
+                    <div class="card">
+                        <h3 class="text-xl font-semibold mb-4">Account Statistics</h3>
+                        <div class="space-y-4">
+                            <div class="flex justify-between">
+                                <span>Member Since:</span>
+                                <span id="member-since">-</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Total Products:</span>
+                                <span id="profile-products">0</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Total Orders:</span>
+                                <span id="profile-orders">0</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Account Status:</span>
+                                <span class="badge badge-success">Active</span>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Marketplace -->
-        <div id="marketplace" class="hidden min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-            <div class="container mx-auto px-4 py-8">
-                <button id="marketplace-back-btn" class="mb-6 text-gray-600 hover:text-gray-800 flex items-center">
-                    <i data-lucide="arrow-left" class="mr-2 w-4 h-4"></i>
-                    Back to Menu
-                </button>
+        <!-- Help & Support -->
+        <div id="help-page" class="page">
+            <div class="container">
+                <div class="flex items-center justify-between mb-8">
+                    <h1 class="text-3xl font-bold">Help & Support</h1>
+                    <button class="btn btn-ghost" onclick="showMenu()">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="19" y1="12" x2="5" y2="12"/>
+                            <polyline points="12,19 5,12 12,5"/>
+                        </svg>
+                        Back
+                    </button>
+                </div>
 
-                <div class="bg-white rounded-lg shadow-medium p-6 animate-fade-up">
-                    <h2 class="text-3xl font-bold mb-6">Marketplace</h2>
-                    
-                    <!-- Search -->
-                    <div class="relative mb-6">
-                        <i data-lucide="search" class="absolute left-3 top-3 w-4 h-4 text-gray-400"></i>
-                        <input type="text" id="product-search" placeholder="Search products..." class="w-full pl-10 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-DEFAULT">
-                    </div>
+                <div class="text-center mb-8">
+                    <p class="text-xl text-muted-foreground">Find answers to common questions or get in touch with our support team</p>
+                </div>
 
-                    <!-- Products Grid -->
-                    <div id="marketplace-products" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <!-- Products will be populated by JavaScript -->
+                <div class="grid grid-3 mb-8">
+                    <div class="card text-center">
+                        <svg class="icon icon-lg mx-auto mb-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                            <path d="M6.5 2H20v20l-4-4H6.5a2.5 2.5 0 0 1 0-5"/>
+                        </svg>
+                        <h3 class="text-lg font-semibold mb-2">User Guide</h3>
+                        <p class="text-sm text-muted-foreground mb-4">Learn how to use all FarmLink features</p>
+                        <button class="btn btn-outline">View Guide</button>
                     </div>
+                    <div class="card text-center">
+                        <svg class="icon icon-lg mx-auto mb-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                        </svg>
+                        <h3 class="text-lg font-semibold mb-2">Live Chat</h3>
+                        <p class="text-sm text-muted-foreground mb-4">Chat with our support team</p>
+                        <button class="btn btn-outline">Start Chat</button>
+                    </div>
+                    <div class="card text-center">
+                        <svg class="icon icon-lg mx-auto mb-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                        </svg>
+                        <h3 class="text-lg font-semibold mb-2">Call Support</h3>
+                        <p class="text-sm text-muted-foreground mb-4">Speak directly with our team</p>
+                        <button class="btn btn-outline">Call Now</button>
+                    </div>
+                </div>
+
+                <div class="card mb-8">
+                    <h2 class="text-2xl font-bold mb-6">Frequently Asked Questions</h2>
+                    <div class="accordion" id="faq-accordion">
+                        <!-- FAQ items will be populated by JavaScript -->
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2 class="text-2xl font-bold mb-6">Contact Support</h2>
+                    <form id="support-form" class="space-y-4">
+                        <div class="grid grid-2">
+                            <div class="form-group">
+                                <label class="form-label" for="support-email">Email</label>
+                                <input type="email" class="input" id="support-email" disabled>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="support-subject">Subject</label>
+                                <input type="text" class="input" id="support-subject" placeholder="Brief description of your issue" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="support-message">Message</label>
+                            <textarea class="textarea" id="support-message" placeholder="Please describe your issue in detail..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-full">Send Support Request</button>
+                    </form>
                 </div>
             </div>
         </div>
     </main>
 
     <!-- Login Modal -->
-    <div id="login-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center hidden z-50">
-        <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md m-4 animate-scale-in">
-            <div class="flex justify-between items-center mb-6">
+    <div id="login-modal" class="modal">
+        <div class="modal-content">
+            <div class="flex items-center justify-between mb-6">
                 <h2 class="text-2xl font-bold">Login to FarmLink</h2>
-                <button id="close-login" class="text-gray-500 hover:text-gray-700">
-                    <i data-lucide="x" class="w-5 h-5"></i>
+                <button onclick="hideLoginModal()" class="btn btn-ghost">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
                 </button>
             </div>
+            
             <form id="login-form" class="space-y-4">
-                <div>
-                    <label class="block text-gray-700 mb-1">Email</label>
-                    <input type="email" id="login-email" required class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-DEFAULT">
+                <div class="form-group">
+                    <label class="form-label" for="login-email">Email</label>
+                    <input type="email" class="input" id="login-email" placeholder="user@gmail.com" required>
                 </div>
-                <div>
-                    <label class="block text-gray-700 mb-1">Password</label>
-                    <input type="password" id="login-password" required class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-DEFAULT">
+                <div class="form-group">
+                    <label class="form-label" for="login-password">Password</label>
+                    <input type="password" class="input" id="login-password" placeholder="Password (min 3 characters)" required>
                 </div>
-                <div>
-                    <label class="block text-gray-700 mb-1">Role</label>
-                    <select id="login-role" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-DEFAULT">
+                <div class="form-group">
+                    <label class="form-label" for="login-role">Role</label>
+                    <select class="select" id="login-role" required>
+                        <option value="">Select your role</option>
                         <option value="farmer">Farmer</option>
                         <option value="business">Business</option>
                     </select>
                 </div>
-                <div id="login-error" class="hidden text-red-600 text-sm">
-                    <i data-lucide="alert-circle" class="inline w-4 h-4 mr-1"></i>
-                    <span>Invalid login credentials</span>
-                </div>
-                <button type="submit" class="w-full bg-primary-DEFAULT hover:bg-primary-hover text-white p-3 rounded-lg">
-                    Login
-                </button>
+                <button type="submit" class="btn btn-primary w-full">Login</button>
             </form>
-            
-            <div class="mt-6 text-sm text-gray-600 space-y-1">
-                <p><strong>Demo Accounts:</strong></p>
-                <p>Farmer: farmer@example.com / farmer123</p>
-                <p>Business: business@example.com / business123</p>
+
+            <div class="alert alert-info mt-4">
+                <p class="text-sm">
+                    <strong>Demo Login Instructions:</strong><br>
+                    • Use any Gmail address (@gmail.com)<br>
+                    • Password must be at least 3 characters<br>
+                    • Accounts are created automatically on first login
+                </p>
             </div>
+        </div>
+    </div>
+
+    <!-- Add Product Modal -->
+    <div id="add-product-modal" class="modal">
+        <div class="modal-content">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-bold">Add New Product</h2>
+                <button onclick="hideAddProductModal()" class="btn btn-ghost">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+            
+            <form id="add-product-form" class="space-y-4">
+                <div class="form-group">
+                    <label class="form-label" for="product-name">Product Name</label>
+                    <input type="text" class="input" id="product-name" placeholder="e.g., Organic Tomatoes" required>
+                </div>
+                <div class="grid grid-2">
+                    <div class="form-group">
+                        <label class="form-label" for="product-quantity">Quantity</label>
+                        <input type="number" class="input" id="product-quantity" placeholder="100" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="product-unit">Unit</label>
+                        <select class="select" id="product-unit" required>
+                            <option value="">Select unit</option>
+                            <option value="kg">Kilograms (kg)</option>
+                            <option value="tons">Tons</option>
+                            <option value="pieces">Pieces</option>
+                            <option value="boxes">Boxes</option>
+                            <option value="bags">Bags</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="product-price">Price per Unit ($)</label>
+                    <input type="number" class="input" id="product-price" placeholder="5.00" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="product-description">Description (Optional)</label>
+                    <textarea class="textarea" id="product-description" placeholder="Fresh, organic tomatoes grown locally..."></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary w-full">Add Product</button>
+            </form>
         </div>
     </div>
 
     <!-- Order Modal -->
-    <div id="order-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center hidden z-50">
-        <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md m-4 animate-scale-in">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-xl font-bold">Order Product</h3>
-                <button id="close-order" class="text-gray-500 hover:text-gray-700">
-                    <i data-lucide="x" class="w-5 h-5"></i>
+    <div id="order-modal" class="modal">
+        <div class="modal-content">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-bold">Place Order</h2>
+                <button onclick="hideOrderModal()" class="btn btn-ghost">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
                 </button>
             </div>
+            
+            <div id="order-product-info" class="mb-6">
+                <!-- Product info will be populated by JavaScript -->
+            </div>
+
             <form id="order-form" class="space-y-4">
-                <div>
-                    <label class="block text-gray-700 mb-1">Quantity</label>
-                    <input type="number" id="order-quantity" min="1" required class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-DEFAULT">
+                <div class="form-group">
+                    <label class="form-label" for="order-quantity">Quantity</label>
+                    <input type="number" class="input" id="order-quantity" min="1" required>
                 </div>
-                <div>
-                    <label class="block text-gray-700 mb-1">Delivery Date</label>
-                    <input type="date" id="order-date" required class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-DEFAULT">
+                <div class="form-group">
+                    <label class="form-label" for="order-date">Delivery Date</label>
+                    <input type="date" class="input" id="order-date" required>
                 </div>
-                <div>
-                    <label class="block text-gray-700 mb-1">Special Instructions</label>
-                    <textarea id="order-notes" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-DEFAULT" rows="3"></textarea>
+                <div class="form-group">
+                    <label class="form-label" for="order-notes">Special Instructions (Optional)</label>
+                    <textarea class="textarea" id="order-notes" placeholder="Any special delivery instructions..."></textarea>
                 </div>
-                <div id="order-total" class="hidden p-3 bg-gray-50 rounded-lg">
-                    <p class="font-semibold">Order Total: $<span id="total-amount">0</span></p>
+                <div class="form-group">
+                    <div class="flex justify-between items-center text-lg font-semibold">
+                        <span>Total:</span>
+                        <span id="order-total">$0.00</span>
+                    </div>
                 </div>
-                <div class="flex space-x-2">
-                    <button type="submit" class="flex-1 bg-primary-DEFAULT hover:bg-primary-hover text-white p-3 rounded-lg">
-                        Place Order
-                    </button>
-                    <button type="button" id="cancel-order-btn" class="flex-1 border border-gray-300 text-gray-700 hover:bg-gray-50 p-3 rounded-lg">
-                        Cancel
-                    </button>
-                </div>
+                <button type="submit" class="btn btn-primary w-full">Place Order</button>
             </form>
         </div>
     </div>
 
-    <!-- Toast Notification -->
-    <div id="toast" class="fixed top-4 right-4 bg-white border border-green-200 text-green-800 px-6 py-4 rounded-lg shadow-lg hidden z-50">
-        <div class="flex items-center">
-            <i data-lucide="check-circle" class="w-5 h-5 mr-2 text-green-600"></i>
-            <span id="toast-message">Action completed successfully!</span>
-        </div>
-    </div>
-
-    <!-- Footer -->
-    <footer class="gradient-primary text-white p-4 text-center">
-        <p>&copy; 2025 FarmLink. All rights reserved.</p>
-    </footer>
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
 
     <script>
-        // Initialize Lucide icons
-        lucide.createIcons();
-
         // Application State
-        const state = {
-            users: [
-                { id: 1, email: 'farmer@example.com', password: 'farmer123', name: 'John Farmer', role: 'farmer' },
-                { id: 2, email: 'business@example.com', password: 'business123', name: 'Fresh Market', role: 'business' }
-            ],
-            products: [
-                { id: 1, name: 'Organic Apples', quantity: 500, price: 2.5, unit: 'kg', farmerId: 1, status: 'Available' },
-                { id: 2, name: 'Fresh Tomatoes', quantity: 300, price: 1.8, unit: 'kg', farmerId: 1, status: 'Available' },
-                { id: 3, name: 'Whole Wheat', quantity: 1000, price: 0.8, unit: 'kg', farmerId: 1, status: 'Available' }
-            ],
-            orders: [],
-            currentUser: null,
-            lastProductId: 3,
-            lastOrderId: 0,
-            currentView: 'home',
-            currentOrderProduct: null
-        };
+        let currentUser = null;
+        let currentPage = 'landing';
+        let products = [];
+        let orders = [];
+        let selectedProduct = null;
 
-        // DOM Elements
-        const elements = {
-            homePage: document.getElementById('home-page'),
-            menuPage: document.getElementById('menu-page'),
-            farmerDashboard: document.getElementById('farmer-dashboard'),
-            marketplace: document.getElementById('marketplace'),
-            loginModal: document.getElementById('login-modal'),
-            orderModal: document.getElementById('order-modal'),
-            toast: document.getElementById('toast')
-        };
+        // Initialize application
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+            setupEventListeners();
+            loadSampleData();
+        });
 
-        // Utility Functions
-        function showToast(message) {
-            document.getElementById('toast-message').textContent = message;
-            elements.toast.classList.remove('hidden');
-            setTimeout(() => {
-                elements.toast.classList.add('hidden');
-            }, 3000);
+        function initializeApp() {
+            // Check for stored user session
+            const storedUser = localStorage.getItem('farmlink_user');
+            if (storedUser) {
+                currentUser = JSON.parse(storedUser);
+                updateUIForLoggedInUser();
+            }
         }
 
-        function showModal(modal) {
-            modal.classList.remove('hidden');
+        function setupEventListeners() {
+            // Login form
+            document.getElementById('login-form').addEventListener('submit', handleLogin);
+            
+            // Add product form
+            document.getElementById('add-product-form').addEventListener('submit', handleAddProduct);
+            
+            // Order form
+            document.getElementById('order-form').addEventListener('submit', handlePlaceOrder);
+            
+            // Profile form
+            document.getElementById('profile-form').addEventListener('submit', handleUpdateProfile);
+            
+            // Support form
+            document.getElementById('support-form').addEventListener('submit', handleSupportRequest);
+            
+            // Search functionality
+            document.getElementById('product-search').addEventListener('input', handleProductSearch);
+            
+            // Order quantity change for total calculation
+            document.getElementById('order-quantity').addEventListener('input', updateOrderTotal);
         }
 
-        function hideModal(modal) {
-            modal.classList.add('hidden');
-        }
-
-        function showView(viewName) {
-            // Hide all views
-            Object.values(elements).forEach(el => {
-                if (el && el.classList) {
-                    el.classList.add('hidden');
+        function loadSampleData() {
+            // Sample products
+            products = [
+                {
+                    id: '1',
+                    name: 'Organic Tomatoes',
+                    quantity: 500,
+                    unit: 'kg',
+                    price: 3.50,
+                    farmerName: 'John Smith',
+                    farmerEmail: 'john@gmail.com',
+                    status: 'Available',
+                    description: 'Fresh, organic tomatoes grown locally without pesticides.'
+                },
+                {
+                    id: '2',
+                    name: 'Sweet Corn',
+                    quantity: 200,
+                    unit: 'pieces',
+                    price: 0.75,
+                    farmerName: 'Maria Garcia',
+                    farmerEmail: 'maria@gmail.com',
+                    status: 'Available',
+                    description: 'Sweet, tender corn perfect for summer meals.'
+                },
+                {
+                    id: '3',
+                    name: 'Fresh Lettuce',
+                    quantity: 100,
+                    unit: 'pieces',
+                    price: 2.00,
+                    farmerName: 'David Brown',
+                    farmerEmail: 'david@gmail.com',
+                    status: 'Available',
+                    description: 'Crisp lettuce perfect for salads and sandwiches.'
                 }
-            });
-            
-            // Show selected view
-            if (elements[viewName]) {
-                elements[viewName].classList.remove('hidden');
-            }
-            
-            state.currentView = viewName;
-            updateAuthNav();
+            ];
+
+            // Sample orders
+            orders = [
+                {
+                    id: '1',
+                    productId: '1',
+                    productName: 'Organic Tomatoes',
+                    quantity: 50,
+                    price: 3.50,
+                    total: 175.00,
+                    customerName: 'Fresh Foods Inc.',
+                    customerEmail: 'orders@freshfoods.com',
+                    farmerEmail: 'john@gmail.com',
+                    deliveryDate: '2024-01-20',
+                    status: 'Pending',
+                    orderDate: '2024-01-15',
+                    notes: 'Please deliver before 10 AM'
+                }
+            ];
+
+            // FAQ data
+            const faqs = [
+                {
+                    question: "How do I create an account?",
+                    answer: "Simply use any Gmail address (@gmail.com) with a password of at least 3 characters. Accounts are automatically created on first login."
+                },
+                {
+                    question: "How do I list my products as a farmer?",
+                    answer: "Go to 'Manage Products' from your dashboard, click 'Add Product', and fill in the details including name, quantity, price, and unit type."
+                },
+                {
+                    question: "How do businesses place orders?",
+                    answer: "Browse the marketplace, find products you want, click 'Order', specify quantity and delivery details, then submit your order."
+                },
+                {
+                    question: "How do I track my orders?",
+                    answer: "Use the 'View Orders' or 'Order History' section from your menu to see all current and past orders with their status."
+                },
+                {
+                    question: "What payment methods are accepted?",
+                    answer: "Currently, FarmLink facilitates direct communication between farmers and businesses. Payment terms are arranged directly between parties."
+                }
+            ];
+
+            populateFAQ(faqs);
         }
 
-        // Authentication Functions
-        function updateAuthNav() {
-            const authNav = document.getElementById('auth-nav');
-            if (state.currentUser) {
-                authNav.innerHTML = `
-                    <div class="flex items-center space-x-4">
-                        <span class="hidden sm:inline text-white/90">Welcome, ${state.currentUser.name}</span>
-                        <button id="logout-btn" class="border border-white/20 text-white hover:bg-white/10 px-4 py-2 rounded-md transition-all">
-                            Logout
-                        </button>
-                    </div>
-                `;
-                document.getElementById('logout-btn').addEventListener('click', logout);
-            } else {
-                authNav.innerHTML = `
-                    <button id="login-btn" class="border border-white/20 text-white hover:bg-white/10 px-4 py-2 rounded-md transition-all">
-                        Login
-                    </button>
-                `;
-                document.getElementById('login-btn').addEventListener('click', () => showModal(elements.loginModal));
-            }
-        }
-
-        function login(email, password, role) {
-            const user = state.users.find(u => 
-                u.email === email && u.password === password && u.role === role
-            );
+        // Authentication functions
+        function handleLogin(e) {
+            e.preventDefault();
             
-            if (user) {
-                state.currentUser = user;
-                showView('menuPage');
-                hideModal(elements.loginModal);
-                showToast(`Welcome back, ${user.name}!`);
-                renderMenu();
-                return true;
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const role = document.getElementById('login-role').value;
+
+            // Simple validation
+            if (!email.endsWith('@gmail.com')) {
+                showToast('Please use a Gmail address (@gmail.com)', 'error');
+                return;
             }
-            return false;
+
+            if (password.length < 3) {
+                showToast('Password must be at least 3 characters', 'error');
+                return;
+            }
+
+            // Simulate login
+            currentUser = {
+                email,
+                name: email.split('@')[0].replace(/[^a-zA-Z]/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+                role,
+                joinDate: new Date().toISOString()
+            };
+
+            localStorage.setItem('farmlink_user', JSON.stringify(currentUser));
+            
+            hideLoginModal();
+            updateUIForLoggedInUser();
+            showDashboard();
+            showToast('Successfully logged in!', 'success');
         }
 
         function logout() {
-            state.currentUser = null;
-            showView('homePage');
-            showToast('You have been logged out.');
+            currentUser = null;
+            localStorage.removeItem('farmlink_user');
+            showLandingPage();
+            updateUIForLoggedOutUser();
+            showToast('Successfully logged out!', 'success');
         }
 
-        // Render Functions
-        function renderMenu() {
-            const userName = document.getElementById('user-name');
-            const menuItems = document.getElementById('menu-items');
-            
-            userName.textContent = state.currentUser.name;
-            
-            const farmerItems = [
-                { icon: 'tractor', title: 'Manage Products', desc: 'View, add, edit or delete your products', action: () => showFarmerDashboard() },
-                { icon: 'clipboard-list', title: 'View Orders', desc: 'See orders for your products', action: () => showToast('Orders feature coming soon!') }
-            ];
-            
-            const businessItems = [
-                { icon: 'store', title: 'Browse Marketplace', desc: 'Find products from local farmers', action: () => showMarketplace() },
-                { icon: 'history', title: 'Order History', desc: 'View your past orders', action: () => showToast('Order history coming soon!') }
-            ];
-            
-            const commonItems = [
-                { icon: 'user', title: 'Profile Settings', desc: 'Update your account information', action: () => showToast('Profile settings coming soon!') },
-                { icon: 'help-circle', title: 'Help & Support', desc: 'Get assistance with the platform', action: () => showToast('Help section coming soon!') }
-            ];
-            
-            const items = state.currentUser.role === 'farmer' ? [...farmerItems, ...commonItems] : [...businessItems, ...commonItems];
-            
-            menuItems.innerHTML = items.map((item, index) => `
-                <div class="bg-white rounded-lg p-8 text-center card-hover shadow-soft cursor-pointer animate-fade-up" 
-                     style="animation-delay: ${index * 0.1}s" onclick="menuItemClick(${index})">
-                    <div class="w-16 h-16 mx-auto mb-4 gradient-primary rounded-full flex items-center justify-center">
-                        <i data-lucide="${item.icon}" class="w-8 h-8 text-white"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-2">${item.title}</h3>
-                    <p class="text-gray-600">${item.desc}</p>
+        function updateUIForLoggedInUser() {
+            document.getElementById('nav-buttons').innerHTML = `
+                <div class="flex items-center space-x-4">
+                    <span class="hidden md:inline">Welcome, ${currentUser.name}</span>
+                    <button class="btn btn-outline" onclick="logout()">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                            <polyline points="16,17 21,12 16,7"/>
+                            <line x1="21" y1="12" x2="9" y2="12"/>
+                        </svg>
+                        Logout
+                    </button>
                 </div>
-            `).join('');
+            `;
             
-            // Store actions for menu items
-            window.menuActions = items.map(item => item.action);
-            
-            lucide.createIcons();
+            document.getElementById('user-name').textContent = currentUser.name;
+            updateProfileForm();
+            updateDashboardStats();
         }
 
-        function showFarmerDashboard() {
-            showView('farmerDashboard');
-            renderFarmerProducts();
+        function updateUIForLoggedOutUser() {
+            document.getElementById('nav-buttons').innerHTML = `
+                <button class="btn btn-outline" onclick="showLoginModal()">Login</button>
+            `;
+        }
+
+        // Navigation functions
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById(pageId).classList.add('active');
+            currentPage = pageId;
+        }
+
+        function showLandingPage() {
+            showPage('landing-page');
+        }
+
+        function showDashboard() {
+            if (!currentUser) {
+                showLoginModal();
+                return;
+            }
+            showPage('dashboard-page');
+            updateDashboardStats();
+        }
+
+        function showMenu() {
+            if (!currentUser) {
+                showLoginModal();
+                return;
+            }
+            showPage('menu-page');
+            populateMenuOptions();
         }
 
         function showMarketplace() {
-            showView('marketplace');
-            renderMarketplace();
+            if (!currentUser) {
+                showLoginModal();
+                return;
+            }
+            showPage('marketplace-page');
+            populateMarketplace();
         }
 
-        function renderFarmerProducts() {
-            const productsList = document.getElementById('products-list');
-            const farmerProducts = state.products.filter(p => p.farmerId === state.currentUser.id);
-            
-            if (farmerProducts.length === 0) {
-                productsList.innerHTML = `
-                    <div class="bg-white border rounded-lg p-8 text-center text-gray-600">
-                        <p>No products added yet. Click "Add Product" to get started!</p>
-                    </div>
-                `;
-            } else {
-                productsList.innerHTML = farmerProducts.map(product => `
-                    <div class="bg-white border rounded-lg p-4 card-hover">
-                        <div class="flex items-center justify-between">
-                            <div class="flex-1">
-                                <h4 class="font-semibold text-lg">${product.name}</h4>
-                                <p class="text-gray-600">
-                                    ${product.quantity} ${product.unit} available at $${product.price}/${product.unit}
-                                </p>
-                            </div>
-                            <div class="flex items-center space-x-2">
-                                <span class="px-2 py-1 rounded-full text-xs ${product.status === 'Available' ? 'status-available' : 'status-soldout'}">
-                                    ${product.status}
-                                </span>
-                                <button onclick="deleteProduct(${product.id})" class="text-red-600 hover:text-red-800 p-1">
-                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                `).join('');
+        function showManageProducts() {
+            if (!currentUser || currentUser.role !== 'farmer') {
+                showToast('Only farmers can manage products', 'error');
+                return;
+            }
+            showPage('manage-products-page');
+            populateFarmerProducts();
+        }
+
+        function showOrders() {
+            if (!currentUser) {
+                showLoginModal();
+                return;
+            }
+            showPage('orders-page');
+            populateOrders();
+        }
+
+        function showProfile() {
+            if (!currentUser) {
+                showLoginModal();
+                return;
+            }
+            showPage('profile-page');
+            updateProfileForm();
+        }
+
+        function showHelp() {
+            showPage('help-page');
+        }
+
+        // Modal functions
+        function showLoginModal() {
+            document.getElementById('login-modal').classList.add('show');
+        }
+
+        function hideLoginModal() {
+            document.getElementById('login-modal').classList.remove('show');
+            document.getElementById('login-form').reset();
+        }
+
+        function showAddProductForm() {
+            if (!currentUser || currentUser.role !== 'farmer') {
+                showToast('Only farmers can add products', 'error');
+                return;
+            }
+            document.getElementById('add-product-modal').classList.add('show');
+        }
+
+        function hideAddProductModal() {
+            document.getElementById('add-product-modal').classList.remove('show');
+            document.getElementById('add-product-form').reset();
+        }
+
+        function showOrderModal(productId) {
+            if (!currentUser || currentUser.role !== 'business') {
+                showToast('Only businesses can place orders', 'error');
+                return;
             }
             
-            lucide.createIcons();
+            selectedProduct = products.find(p => p.id === productId);
+            if (!selectedProduct) return;
+
+            document.getElementById('order-product-info').innerHTML = `
+                <div class="card">
+                    <h3 class="font-semibold">${selectedProduct.name}</h3>
+                    <p class="text-sm text-muted-foreground">by ${selectedProduct.farmerName}</p>
+                    <p class="text-lg font-bold">$${selectedProduct.price} per ${selectedProduct.unit}</p>
+                    <p class="text-sm">Available: ${selectedProduct.quantity} ${selectedProduct.unit}</p>
+                </div>
+            `;
+
+            // Set default values
+            document.getElementById('order-quantity').max = selectedProduct.quantity;
+            document.getElementById('order-quantity').value = 1;
+            
+            // Set default delivery date to tomorrow
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            document.getElementById('order-date').value = tomorrow.toISOString().split('T')[0];
+            
+            updateOrderTotal();
+            document.getElementById('order-modal').classList.add('show');
         }
 
-        function renderMarketplace() {
-            const marketplaceProducts = document.getElementById('marketplace-products');
-            const availableProducts = state.products.filter(p => p.status === 'Available');
-            
-            if (availableProducts.length === 0) {
-                marketplaceProducts.innerHTML = `
-                    <div class="col-span-full bg-white border rounded-lg p-8 text-center text-gray-600">
-                        <p>No products available right now. Check back later!</p>
-                    </div>
-                `;
-            } else {
-                marketplaceProducts.innerHTML = availableProducts.map((product, index) => `
-                    <div class="bg-white rounded-lg p-6 card-hover shadow-soft animate-fade-up" 
-                         style="animation-delay: ${index * 0.1}s">
-                        <h4 class="text-lg font-semibold mb-2">${product.name}</h4>
-                        <div class="space-y-2 text-sm text-gray-600 mb-4">
-                            <p>📦 ${product.quantity} ${product.unit} available</p>
-                            <p>💰 $${product.price}/${product.unit}</p>
-                            <p>👨‍🌾 John Farmer</p>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <span class="px-2 py-1 rounded-full text-xs status-available">
-                                ${product.status}
-                            </span>
-                            <button onclick="openOrderModal(${product.id})" class="bg-primary-DEFAULT hover:bg-primary-hover text-white px-3 py-1 rounded text-sm flex items-center">
-                                <i data-lucide="shopping-cart" class="mr-1 w-4 h-4"></i>
-                                Order
-                            </button>
-                        </div>
-                    </div>
-                `).join('');
-            }
-            
-            lucide.createIcons();
+        function hideOrderModal() {
+            document.getElementById('order-modal').classList.remove('show');
+            document.getElementById('order-form').reset();
+            selectedProduct = null;
         }
 
-        // Product Management
-        function addProduct(productData) {
+        // Product management functions
+        function handleAddProduct(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('product-name').value;
+            const quantity = parseInt(document.getElementById('product-quantity').value);
+            const unit = document.getElementById('product-unit').value;
+            const price = parseFloat(document.getElementById('product-price').value);
+            const description = document.getElementById('product-description').value;
+
             const newProduct = {
-                ...productData,
-                id: ++state.lastProductId,
-                farmerId: state.currentUser.id,
+                id: Date.now().toString(),
+                name,
+                quantity,
+                unit,
+                price,
+                description,
+                farmerName: currentUser.name,
+                farmerEmail: currentUser.email,
                 status: 'Available'
             };
+
+            products.push(newProduct);
+            hideAddProductModal();
+            showToast('Product added successfully!', 'success');
             
-            state.products.push(newProduct);
-            renderFarmerProducts();
-            showToast(`${newProduct.name} has been added to your inventory.`);
+            if (currentPage === 'manage-products-page') {
+                populateFarmerProducts();
+            }
         }
 
         function deleteProduct(productId) {
             if (confirm('Are you sure you want to delete this product?')) {
-                const product = state.products.find(p => p.id === productId);
-                state.products = state.products.filter(p => p.id !== productId);
-                renderFarmerProducts();
-                if (product) {
-                    showToast(`${product.name} has been removed from your inventory.`);
-                }
+                products = products.filter(p => p.id !== productId);
+                showToast('Product deleted successfully!', 'success');
+                populateFarmerProducts();
             }
         }
 
-        // Order Management
-        function openOrderModal(productId) {
-            const product = state.products.find(p => p.id === productId);
-            if (!product) return;
+        function handlePlaceOrder(e) {
+            e.preventDefault();
             
-            state.currentOrderProduct = product;
-            document.getElementById('order-quantity').max = product.quantity;
-            showModal(elements.orderModal);
-        }
+            if (!selectedProduct) return;
 
-        function placeOrder(orderData) {
-            const product = state.currentOrderProduct;
-            if (!product || !state.currentUser) return;
+            const quantity = parseInt(document.getElementById('order-quantity').value);
+            const deliveryDate = document.getElementById('order-date').value;
+            const notes = document.getElementById('order-notes').value;
+            const total = quantity * selectedProduct.price;
 
             const newOrder = {
-                id: ++state.lastOrderId,
-                ...orderData,
-                productId: product.id,
-                businessId: state.currentUser.id,
-                totalPrice: orderData.quantity * product.price,
-                orderDate: new Date().toISOString(),
-                status: 'Pending'
+                id: Date.now().toString(),
+                productId: selectedProduct.id,
+                productName: selectedProduct.name,
+                quantity,
+                price: selectedProduct.price,
+                total,
+                customerName: currentUser.name,
+                customerEmail: currentUser.email,
+                farmerEmail: selectedProduct.farmerEmail,
+                deliveryDate,
+                status: 'Pending',
+                orderDate: new Date().toISOString().split('T')[0],
+                notes
             };
 
+            orders.push(newOrder);
+            
             // Update product quantity
-            product.quantity -= orderData.quantity;
-            if (product.quantity <= 0) {
-                product.status = 'Sold Out';
+            selectedProduct.quantity -= quantity;
+            if (selectedProduct.quantity <= 0) {
+                selectedProduct.status = 'Out of Stock';
             }
 
-            state.orders.push(newOrder);
-            hideModal(elements.orderModal);
-            renderMarketplace();
-            showToast(`Your order for ${orderData.quantity} ${product.unit} of ${product.name} has been placed.`);
+            hideOrderModal();
+            showToast('Order placed successfully!', 'success');
         }
 
-        // Global functions for onclick handlers
-        window.menuItemClick = function(index) {
-            window.menuActions[index]();
-        };
+        function updateOrderTotal() {
+            if (!selectedProduct) return;
+            
+            const quantity = parseInt(document.getElementById('order-quantity').value) || 0;
+            const total = quantity * selectedProduct.price;
+            document.getElementById('order-total').textContent = `$${total.toFixed(2)}`;
+        }
 
-        window.deleteProduct = deleteProduct;
-        window.openOrderModal = openOrderModal;
+        function updateOrderStatus(orderId, newStatus) {
+            const order = orders.find(o => o.id === orderId);
+            if (order) {
+                order.status = newStatus;
+                showToast('Order status updated!', 'success');
+                populateOrders();
+            }
+        }
 
-        // Event Listeners
-        document.addEventListener('DOMContentLoaded', function() {
-            // Login buttons
-            document.getElementById('hero-login-btn').addEventListener('click', () => showModal(elements.loginModal));
-            document.getElementById('cta-login-btn').addEventListener('click', () => showModal(elements.loginModal));
+        // UI population functions
+        function populateMenuOptions() {
+            const menuContainer = document.getElementById('menu-options');
             
-            // Modal close buttons
-            document.getElementById('close-login').addEventListener('click', () => hideModal(elements.loginModal));
-            document.getElementById('close-order').addEventListener('click', () => hideModal(elements.orderModal));
+            const farmerOptions = [
+                { title: 'Dashboard', description: 'View your overview and statistics', icon: 'home', action: 'showDashboard()' },
+                { title: 'Manage Products', description: 'Add and manage your products', icon: 'package', action: 'showManageProducts()' },
+                { title: 'View Orders', description: 'See incoming orders and manage them', icon: 'shopping-cart', action: 'showOrders()' },
+                { title: 'Profile Settings', description: 'Update your profile information', icon: 'user', action: 'showProfile()' },
+                { title: 'Help & Support', description: 'Get help and contact support', icon: 'help-circle', action: 'showHelp()' }
+            ];
+
+            const businessOptions = [
+                { title: 'Dashboard', description: 'View your overview and statistics', icon: 'home', action: 'showDashboard()' },
+                { title: 'Marketplace', description: 'Browse and order products', icon: 'shopping-bag', action: 'showMarketplace()' },
+                { title: 'Order History', description: 'View your past and current orders', icon: 'shopping-cart', action: 'showOrders()' },
+                { title: 'Profile Settings', description: 'Update your profile information', icon: 'user', action: 'showProfile()' },
+                { title: 'Help & Support', description: 'Get help and contact support', icon: 'help-circle', action: 'showHelp()' }
+            ];
+
+            const options = currentUser.role === 'farmer' ? farmerOptions : businessOptions;
             
-            // Back buttons
-            document.getElementById('farmer-back-btn').addEventListener('click', () => showView('menuPage'));
-            document.getElementById('marketplace-back-btn').addEventListener('click', () => showView('menuPage'));
+            menuContainer.innerHTML = options.map(option => `
+                <div class="card text-center" onclick="${option.action}">
+                    <svg class="icon icon-lg mx-auto mb-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        ${getIconPath(option.icon)}
+                    </svg>
+                    <h3 class="text-lg font-semibold mb-2">${option.title}</h3>
+                    <p class="text-sm text-muted-foreground">${option.description}</p>
+                </div>
+            `).join('');
+        }
+
+        function populateMarketplace() {
+            const productList = document.getElementById('product-list');
+            const availableProducts = products.filter(p => p.status === 'Available');
             
-            // Product form
-            document.getElementById('add-product-btn').addEventListener('click', () => {
-                document.getElementById('product-form-container').classList.remove('hidden');
-            });
+            if (availableProducts.length === 0) {
+                productList.innerHTML = '<p class="text-center text-muted-foreground">No products available at the moment.</p>';
+                return;
+            }
+
+            productList.innerHTML = availableProducts.map(product => `
+                <div class="product-card">
+                    <h3 class="text-lg font-semibold mb-2">${product.name}</h3>
+                    <p class="text-sm text-muted-foreground mb-2">by ${product.farmerName}</p>
+                    <p class="text-sm mb-2">${product.description || 'No description available'}</p>
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="text-2xl font-bold">$${product.price}</span>
+                        <span class="text-sm text-muted-foreground">per ${product.unit}</span>
+                    </div>
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="text-sm">Available: ${product.quantity} ${product.unit}</span>
+                        <span class="badge badge-success">${product.status}</span>
+                    </div>
+                    <button class="btn btn-primary w-full" onclick="showOrderModal('${product.id}')">Order Now</button>
+                </div>
+            `).join('');
+        }
+
+        function populateFarmerProducts() {
+            const productContainer = document.getElementById('farmer-products');
+            const farmerProducts = products.filter(p => p.farmerEmail === currentUser.email);
             
-            document.getElementById('cancel-product-btn').addEventListener('click', () => {
-                document.getElementById('product-form-container').classList.add('hidden');
-                document.getElementById('product-form').reset();
-            });
+            if (farmerProducts.length === 0) {
+                productContainer.innerHTML = '<p class="text-center text-muted-foreground">You haven\'t added any products yet. Click "Add Product" to get started.</p>';
+                return;
+            }
+
+            productContainer.innerHTML = farmerProducts.map(product => `
+                <div class="product-card">
+                    <div class="flex justify-between items-start mb-2">
+                        <h3 class="text-lg font-semibold">${product.name}</h3>
+                        <button class="btn btn-ghost text-destructive" onclick="deleteProduct('${product.id}')">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="3,6 5,6 21,6"/>
+                                <path d="m19,6v14a2,2 0 0,1-2,2H7a2,2 0 0,1-2-2V6m3,0V4a2,2 0 0,1,2-2h4a2,2 0 0,1,2,2v2"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <p class="text-sm mb-2">${product.description || 'No description'}</p>
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="text-2xl font-bold">$${product.price}</span>
+                        <span class="text-sm text-muted-foreground">per ${product.unit}</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm">Quantity: ${product.quantity} ${product.unit}</span>
+                        <span class="badge ${product.status === 'Available' ? 'badge-success' : 'badge-warning'}">${product.status}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function populateOrders() {
+            const ordersContainer = document.getElementById('orders-list');
+            let userOrders;
+
+            if (currentUser.role === 'farmer') {
+                userOrders = orders.filter(o => o.farmerEmail === currentUser.email);
+            } else {
+                userOrders = orders.filter(o => o.customerEmail === currentUser.email);
+            }
+
+            if (userOrders.length === 0) {
+                ordersContainer.innerHTML = '<p class="text-center text-muted-foreground">No orders found.</p>';
+                return;
+            }
+
+            ordersContainer.innerHTML = userOrders.map(order => `
+                <div class="order-item">
+                    <div class="flex justify-between items-start mb-2">
+                        <div>
+                            <h3 class="text-lg font-semibold">${order.productName}</h3>
+                            <p class="text-sm text-muted-foreground">
+                                ${currentUser.role === 'farmer' ? `Customer: ${order.customerName}` : `Farmer: ${order.farmerEmail}`}
+                            </p>
+                        </div>
+                        <span class="badge ${order.status === 'Pending' ? 'badge-warning' : order.status === 'Confirmed' ? 'badge-success' : 'badge-error'}">${order.status}</span>
+                    </div>
+                    <div class="grid grid-2 gap-4 mb-4">
+                        <div>
+                            <p class="text-sm"><strong>Quantity:</strong> ${order.quantity}</p>
+                            <p class="text-sm"><strong>Price:</strong> $${order.price} each</p>
+                            <p class="text-sm"><strong>Total:</strong> $${order.total.toFixed(2)}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm"><strong>Order Date:</strong> ${order.orderDate}</p>
+                            <p class="text-sm"><strong>Delivery Date:</strong> ${order.deliveryDate}</p>
+                        </div>
+                    </div>
+                    ${order.notes ? `<p class="text-sm mb-4"><strong>Notes:</strong> ${order.notes}</p>` : ''}
+                    ${currentUser.role === 'farmer' && order.status === 'Pending' ? `
+                        <div class="space-x-2">
+                            <button class="btn btn-primary" onclick="updateOrderStatus('${order.id}', 'Confirmed')">Confirm Order</button>
+                            <button class="btn btn-outline" onclick="updateOrderStatus('${order.id}', 'Rejected')">Reject Order</button>
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        function populateFAQ(faqs) {
+            const faqContainer = document.getElementById('faq-accordion');
             
-            document.getElementById('product-form').addEventListener('submit', function(e) {
-                e.preventDefault();
-                const formData = new FormData(this);
-                const productData = {
-                    name: formData.get('name') || document.getElementById('product-name').value,
-                    quantity: parseFloat(document.getElementById('product-quantity').value),
-                    price: parseFloat(document.getElementById('product-price').value),
-                    unit: document.getElementById('product-unit').value
-                };
-                
-                addProduct(productData);
-                document.getElementById('product-form-container').classList.add('hidden');
-                this.reset();
-            });
+            faqContainer.innerHTML = faqs.map((faq, index) => `
+                <div class="accordion-item">
+                    <button class="accordion-trigger" onclick="toggleAccordion(${index})">
+                        ${faq.question}
+                        <svg class="icon" id="chevron-${index}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6,9 12,15 18,9"/>
+                        </svg>
+                    </button>
+                    <div class="accordion-content" id="content-${index}">
+                        ${faq.answer}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function toggleAccordion(index) {
+            const content = document.getElementById(`content-${index}`);
+            const chevron = document.getElementById(`chevron-${index}`);
             
-            // Login form
-            document.getElementById('login-form').addEventListener('submit', function(e) {
-                e.preventDefault();
-                const email = document.getElementById('login-email').value;
-                const password = document.getElementById('login-password').value;
-                const role = document.getElementById('login-role').value;
-                
-                if (!login(email, password, role)) {
-                    document.getElementById('login-error').classList.remove('hidden');
-                } else {
-                    document.getElementById('login-error').classList.add('hidden');
-                }
-            });
-            
-            // Order form
-            document.getElementById('cancel-order-btn').addEventListener('click', () => hideModal(elements.orderModal));
-            
-            document.getElementById('order-quantity').addEventListener('input', function() {
-                const quantity = parseFloat(this.value);
-                const product = state.currentOrderProduct;
-                if (quantity && product) {
-                    const total = quantity * product.price;
-                    document.getElementById('total-amount').textContent = total.toFixed(2);
-                    document.getElementById('order-total').classList.remove('hidden');
-                } else {
-                    document.getElementById('order-total').classList.add('hidden');
-                }
-            });
-            
-            document.getElementById('order-form').addEventListener('submit', function(e) {
-                e.preventDefault();
-                const orderData = {
-                    quantity: parseFloat(document.getElementById('order-quantity').value),
-                    deliveryDate: document.getElementById('order-date').value,
-                    notes: document.getElementById('order-notes').value
-                };
-                
-                placeOrder(orderData);
-                this.reset();
-                document.getElementById('order-total').classList.add('hidden');
-            });
-            
-            // Search functionality
-            document.getElementById('product-search').addEventListener('input', function() {
-                const searchTerm = this.value.toLowerCase();
-                const products = document.querySelectorAll('#marketplace-products > div');
-                
-                products.forEach(product => {
-                    const productName = product.querySelector('h4').textContent.toLowerCase();
-                    if (productName.includes(searchTerm)) {
-                        product.style.display = 'block';
-                    } else {
-                        product.style.display = 'none';
-                    }
+            if (content.classList.contains('show')) {
+                content.classList.remove('show');
+                chevron.style.transform = 'rotate(0deg)';
+            } else {
+                // Close all other accordion items
+                document.querySelectorAll('.accordion-content').forEach(item => {
+                    item.classList.remove('show');
                 });
-            });
+                document.querySelectorAll('[id^="chevron-"]').forEach(chevron => {
+                    chevron.style.transform = 'rotate(0deg)';
+                });
+                
+                // Open clicked item
+                content.classList.add('show');
+                chevron.style.transform = 'rotate(180deg)';
+            }
+        }
+
+        function updateDashboardStats() {
+            if (!currentUser) return;
+
+            let totalProducts = 0;
+            let activeOrders = 0;
+            let totalSales = 0;
+            let satisfiedCustomers = 0;
+
+            if (currentUser.role === 'farmer') {
+                const farmerProducts = products.filter(p => p.farmerEmail === currentUser.email);
+                const farmerOrders = orders.filter(o => o.farmerEmail === currentUser.email);
+                
+                totalProducts = farmerProducts.length;
+                activeOrders = farmerOrders.filter(o => o.status === 'Pending').length;
+                totalSales = farmerOrders.filter(o => o.status === 'Confirmed').reduce((sum, o) => sum + o.total, 0);
+                satisfiedCustomers = new Set(farmerOrders.filter(o => o.status === 'Confirmed').map(o => o.customerEmail)).size;
+            } else {
+                const businessOrders = orders.filter(o => o.customerEmail === currentUser.email);
+                
+                totalProducts = products.filter(p => p.status === 'Available').length;
+                activeOrders = businessOrders.filter(o => o.status === 'Pending' || o.status === 'Confirmed').length;
+                totalSales = businessOrders.reduce((sum, o) => sum + o.total, 0);
+                satisfiedCustomers = businessOrders.filter(o => o.status === 'Confirmed').length;
+            }
+
+            document.getElementById('total-products').textContent = totalProducts;
+            document.getElementById('active-orders').textContent = activeOrders;
+            document.getElementById('total-sales').textContent = `$${totalSales.toFixed(2)}`;
+            document.getElementById('satisfied-customers').textContent = satisfiedCustomers;
+        }
+
+        function updateProfileForm() {
+            if (!currentUser) return;
+
+            document.getElementById('profile-name').value = currentUser.name;
+            document.getElementById('profile-email').value = currentUser.email;
+            document.getElementById('profile-role').value = currentUser.role;
+            document.getElementById('support-email').value = currentUser.email;
+
+            const joinDate = new Date(currentUser.joinDate).toLocaleDateString();
+            document.getElementById('member-since').textContent = joinDate;
             
-            // Initialize icons and view
-            lucide.createIcons();
-            updateAuthNav();
+            const userProducts = products.filter(p => p.farmerEmail === currentUser.email).length;
+            const userOrders = orders.filter(o => 
+                currentUser.role === 'farmer' ? o.farmerEmail === currentUser.email : o.customerEmail === currentUser.email
+            ).length;
+            
+            document.getElementById('profile-products').textContent = userProducts;
+            document.getElementById('profile-orders').textContent = userOrders;
+        }
+
+        function handleUpdateProfile(e) {
+            e.preventDefault();
+            
+            const newName = document.getElementById('profile-name').value;
+            currentUser.name = newName;
+            
+            localStorage.setItem('farmlink_user', JSON.stringify(currentUser));
+            showToast('Profile updated successfully!', 'success');
+        }
+
+        function handleSupportRequest(e) {
+            e.preventDefault();
+            
+            const subject = document.getElementById('support-subject').value;
+            const message = document.getElementById('support-message').value;
+            
+            if (!subject.trim() || !message.trim()) {
+                showToast('Please fill in both subject and message fields.', 'error');
+                return;
+            }
+
+            showToast('Support request sent! We\'ll get back to you within 24 hours.', 'success');
+            document.getElementById('support-form').reset();
+        }
+
+        function handleProductSearch(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const productCards = document.querySelectorAll('.product-card');
+            
+            productCards.forEach(card => {
+                const productName = card.querySelector('h3').textContent.toLowerCase();
+                const farmerName = card.querySelector('.text-muted-foreground').textContent.toLowerCase();
+                
+                if (productName.includes(searchTerm) || farmerName.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // Utility functions
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type} show`;
+            toast.innerHTML = `
+                <div class="flex justify-between items-center">
+                    <span>${message}</span>
+                    <button onclick="this.parentElement.parentElement.remove()" class="ml-4">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"/>
+                            <line x1="6" y1="6" x2="18" y2="18"/>
+                        </svg>
+                    </button>
+                </div>
+            `;
+            
+            document.getElementById('toast-container').appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 5000);
+        }
+
+        function getIconPath(iconName) {
+            const icons = {
+                'home': '<path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/>',
+                'package': '<line x1="16.5" y1="9.4" x2="7.5" y2="4.21"/><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27,6.96 12,12.01 20.73,6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/>',
+                'shopping-cart': '<circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="m1 1 4 20 14-10H6"/>',
+                'shopping-bag': '<path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/>',
+                'user': '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+                'help-circle': '<circle cx="12" cy="12" r="10"/><path d="m9,9a3,3 0 0,1 6,0c0,2-3,3-3,3"/><line x1="12" y1="17" x2="12.01" y2="17"/>'
+            };
+            return icons[iconName] || '';
+        }
+
+        // Close modals when clicking outside
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('modal')) {
+                if (e.target.id === 'login-modal') hideLoginModal();
+                if (e.target.id === 'add-product-modal') hideAddProductModal();
+                if (e.target.id === 'order-modal') hideOrderModal();
+            }
         });
     </script>
 </body>
