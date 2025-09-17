@@ -1,7 +1,8 @@
 from fastapi import FastAPI, HTTPException, Depends, status, UploadFile, File, Form
-from fastapi.security import OAuth2PasswordBearer
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, EmailStr, Field
 from sqlalchemy import create_engine, Column, Integer, String, Float, Boolean, ForeignKey, DateTime
 from sqlalchemy.ext.declarative import declarative_base
@@ -128,7 +129,7 @@ class UserBase(BaseModel):
     role: str = Field(..., regex="^(farmer|business)$")
 
 class UserCreate(UserBase):
-    password: str = Field(..., min_length=6)
+    password: str = Field(..., min_length=3)  # Changed from 6 to 3 to match frontend
     phone: Optional[str] = None
     address: Optional[str] = None
 
@@ -139,7 +140,7 @@ class UserResponse(UserBase):
     created_at: datetime
     
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class ProductBase(BaseModel):
     name: str = Field(..., min_length=2, max_length=100)
@@ -168,9 +169,10 @@ class ProductResponse(ProductBase):
     status: str
     image_url: Optional[str]
     created_at: datetime
+    farmer: Optional[dict] = None  # Include farmer info
     
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class OrderCreate(BaseModel):
     product_id: int
@@ -190,14 +192,21 @@ class OrderResponse(BaseModel):
     delivery_date: Optional[str]
     notes: Optional[str]
     created_at: datetime
+    product: Optional[dict] = None
+    business: Optional[dict] = None
     
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class Token(BaseModel):
     access_token: str
     token_type: str
     user: UserResponse
+
+# Enhanced product response with farmer info
+class ProductResponseWithFarmer(ProductResponse):
+    farmerName: str
+    farmerEmail: str
 
 # Utility functions
 def save_uploaded_file(file: UploadFile) -> str:
@@ -285,7 +294,7 @@ def init_default_data(db: Session):
     if db.query(User).count() == 0:
         default_users = [
             User(
-                email="farmer@example.com",
+                email="farmer@gmail.com",  # Changed to gmail.com to match frontend
                 hashed_password=get_password_hash("farmer123"),
                 full_name="John Farmer",
                 role="farmer",
@@ -293,7 +302,7 @@ def init_default_data(db: Session):
                 address="123 Farm Road, Rural County"
             ),
             User(
-                email="business@example.com",
+                email="business@gmail.com",  # Changed to gmail.com to match frontend
                 hashed_password=get_password_hash("business123"),
                 full_name="Fresh Market",
                 role="business",
@@ -307,7 +316,7 @@ def init_default_data(db: Session):
         db.commit()
         
         # Add sample products
-        farmer = db.query(User).filter(User.email == "farmer@example.com").first()
+        farmer = db.query(User).filter(User.email == "farmer@gmail.com").first()
         if farmer:
             sample_products = [
                 Product(
@@ -345,6 +354,26 @@ def init_default_data(db: Session):
                 db.add(product)
             db.commit()
 
+# Helper function to auto-register users (matching frontend behavior)
+def auto_register_user(email: str, password: str, role: str, db: Session) -> User:
+    """Auto-register user if they don't exist"""
+    user = db.query(User).filter(User.email == email).first()
+    if not user:
+        # Create display name from email
+        name = email.split('@')[0].replace('.', ' ').replace('_', ' ')
+        name = ' '.join(word.capitalize() for word in name.split())
+        
+        user = User(
+            email=email,
+            hashed_password=get_password_hash(password),
+            full_name=name,
+            role=role
+        )
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+    return user
+
 # API Endpoints
 
 @app.on_event("startup")
@@ -356,19 +385,54 @@ async def startup_event():
     finally:
         db.close()
 
-@app.get("/")
-async def root():
-    return {"message": "FarmLink API is running", "version": "1.1.0"}
+# Serve the main HTML file
+@app.get("/", response_class=HTMLResponse)
+async def serve_frontend():
+    """Serve the main HTML file"""
+    try:
+        with open("main.html", "r", encoding="utf-8") as f:
+            return HTMLResponse(content=f.read())
+    except FileNotFoundError:
+        return {"message": "Frontend not found. Please ensure main.html is in the same directory."}
 
-@app.post("/auth/login", response_model=Token)
-async def login(login_data: LoginRequest, db: Session = Depends(get_db)):
-    """Login endpoint that matches frontend expectations"""
+@app.get("/api/health")
+async def health_check():
+    """Health check endpoint"""
+    return {"status": "healthy", "timestamp": datetime.utcnow()}
+
+# Modified login endpoint to match frontend expectations
+@app.post("/api/auth/login")
+async def login_for_frontend(login_data: LoginRequest, db: Session = Depends(get_db)):
+    """Login endpoint that matches frontend expectations with auto-registration"""
+    
+    # Validate email format (must be gmail.com for demo)
+    if not login_data.email.endswith("@gmail.com"):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Please use a Gmail address (@gmail.com)"
+        )
+    
+    # Validate password length
+    if len(login_data.password) < 3:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Password must be at least 3 characters"
+        )
+    
+    # Try to find existing user
     user = db.query(User).filter(
         User.email == login_data.email,
         User.role == login_data.role
     ).first()
     
-    if not user or not verify_password(login_data.password, user.hashed_password):
+    if user and verify_password(login_data.password, user.hashed_password):
+        # Existing user login
+        pass
+    elif not user:
+        # Auto-register new user
+        user = auto_register_user(login_data.email, login_data.password, login_data.role, db)
+    else:
+        # Wrong password
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid email, password, or role"
@@ -382,10 +446,18 @@ async def login(login_data: LoginRequest, db: Session = Depends(get_db)):
     return {
         "access_token": access_token,
         "token_type": "bearer",
-        "user": user
+        "user": {
+            "id": user.id,
+            "email": user.email,
+            "full_name": user.full_name,
+            "role": user.role,
+            "phone": user.phone,
+            "address": user.address,
+            "created_at": user.created_at
+        }
     }
 
-@app.post("/auth/register", response_model=UserResponse)
+@app.post("/api/auth/register", response_model=UserResponse)
 async def register(user: UserCreate, db: Session = Depends(get_db)):
     """User registration"""
     db_user = db.query(User).filter(User.email == user.email).first()
@@ -407,13 +479,14 @@ async def register(user: UserCreate, db: Session = Depends(get_db)):
     db.refresh(db_user)
     return db_user
 
-@app.get("/auth/me", response_model=UserResponse)
+@app.get("/api/auth/me", response_model=UserResponse)
 async def get_current_user_info(current_user: User = Depends(require_auth)):
     """Get current user information"""
     return current_user
 
-@app.post("/products", response_model=ProductResponse)
-async def create_product(
+# Products endpoints with frontend-compatible format
+@app.post("/api/products")
+async def create_product_for_frontend(
     product: ProductCreate,
     current_user: User = Depends(require_auth),
     db: Session = Depends(get_db)
@@ -430,48 +503,24 @@ async def create_product(
     db.add(db_product)
     db.commit()
     db.refresh(db_product)
-    return db_product
+    
+    # Return in frontend-compatible format
+    return {
+        "id": str(db_product.id),
+        "name": db_product.name,
+        "description": db_product.description,
+        "quantity": db_product.quantity,
+        "unit": db_product.unit,
+        "price": db_product.price,
+        "farmerName": current_user.full_name,
+        "farmerEmail": current_user.email,
+        "status": db_product.status,
+        "organic": db_product.organic,
+        "category": db_product.category
+    }
 
-@app.post("/products/upload")
-async def create_product_with_image(
-    name: str = Form(...),
-    description: str = Form(None),
-    quantity: float = Form(...),
-    price: float = Form(...),
-    unit: str = Form("kg"),
-    organic: bool = Form(False),
-    category: str = Form(None),
-    image: UploadFile = File(None),
-    current_user: User = Depends(require_auth),
-    db: Session = Depends(get_db)
-):
-    """Create product with image upload"""
-    if current_user.role != "farmer":
-        raise HTTPException(status_code=403, detail="Only farmers can create products")
-    
-    image_url = None
-    if image and image.filename:
-        image_url = save_uploaded_file(image)
-    
-    db_product = Product(
-        name=name,
-        description=description,
-        quantity=quantity,
-        price=price,
-        unit=unit,
-        organic=organic,
-        category=category,
-        image_url=image_url,
-        farmer_id=current_user.id
-    )
-    
-    db.add(db_product)
-    db.commit()
-    db.refresh(db_product)
-    return db_product
-
-@app.get("/products", response_model=List[ProductResponse])
-async def get_products(
+@app.get("/api/products")
+async def get_products_for_frontend(
     skip: int = 0,
     limit: int = 100,
     category: Optional[str] = None,
@@ -481,8 +530,8 @@ async def get_products(
     available_only: bool = True,
     db: Session = Depends(get_db)
 ):
-    """Get products with filters"""
-    query = db.query(Product)
+    """Get products with filters in frontend-compatible format"""
+    query = db.query(Product).join(User)
     
     if available_only:
         query = query.filter(Product.status == "Available")
@@ -495,46 +544,29 @@ async def get_products(
     if max_price is not None:
         query = query.filter(Product.price <= max_price)
     
-    return query.offset(skip).limit(limit).all()
+    products = query.offset(skip).limit(limit).all()
+    
+    # Format for frontend
+    result = []
+    for product in products:
+        result.append({
+            "id": str(product.id),
+            "name": product.name,
+            "description": product.description,
+            "quantity": product.quantity,
+            "unit": product.unit,
+            "price": product.price,
+            "farmerName": product.farmer.full_name,
+            "farmerEmail": product.farmer.email,
+            "status": product.status,
+            "organic": product.organic,
+            "category": product.category
+        })
+    
+    return result
 
-@app.get("/products/{product_id}", response_model=ProductResponse)
-async def get_product(product_id: int, db: Session = Depends(get_db)):
-    """Get single product by ID"""
-    product = db.query(Product).filter(Product.id == product_id).first()
-    if product is None:
-        raise HTTPException(status_code=404, detail="Product not found")
-    return product
-
-@app.put("/products/{product_id}", response_model=ProductResponse)
-async def update_product(
-    product_id: int,
-    product_update: ProductUpdate,
-    current_user: User = Depends(require_auth),
-    db: Session = Depends(get_db)
-):
-    """Update product - farmers only, own products only"""
-    product = db.query(Product).filter(Product.id == product_id).first()
-    if not product:
-        raise HTTPException(status_code=404, detail="Product not found")
-    
-    if product.farmer_id != current_user.id:
-        raise HTTPException(status_code=403, detail="Can only update your own products")
-    
-    # Update only provided fields
-    update_data = product_update.dict(exclude_unset=True)
-    for field, value in update_data.items():
-        setattr(product, field, value)
-    
-    # Update status based on quantity
-    if "quantity" in update_data:
-        product.status = "Available" if product.quantity > 0 else "Sold Out"
-    
-    db.commit()
-    db.refresh(product)
-    return product
-
-@app.delete("/products/{product_id}")
-async def delete_product(
+@app.delete("/api/products/{product_id}")
+async def delete_product_for_frontend(
     product_id: int,
     current_user: User = Depends(require_auth),
     db: Session = Depends(get_db)
@@ -551,8 +583,9 @@ async def delete_product(
     db.commit()
     return {"message": "Product deleted successfully"}
 
-@app.post("/orders", response_model=OrderResponse)
-async def create_order(
+# Orders endpoints
+@app.post("/api/orders")
+async def create_order_for_frontend(
     order: OrderCreate,
     current_user: User = Depends(require_auth),
     db: Session = Depends(get_db)
@@ -589,10 +622,26 @@ async def create_order(
     db.add(db_order)
     db.commit()
     db.refresh(db_order)
-    return db_order
+    
+    # Return in frontend format
+    return {
+        "id": str(db_order.id),
+        "productId": str(product.id),
+        "productName": product.name,
+        "quantity": order.quantity,
+        "price": product.price,
+        "total": total_price,
+        "customerName": current_user.full_name,
+        "customerEmail": current_user.email,
+        "farmerEmail": product.farmer.email,
+        "deliveryDate": order.delivery_date,
+        "status": db_order.status,
+        "orderDate": db_order.created_at.strftime("%Y-%m-%d"),
+        "notes": order.notes
+    }
 
-@app.get("/orders", response_model=List[OrderResponse])
-async def get_orders(
+@app.get("/api/orders")
+async def get_orders_for_frontend(
     current_user: User = Depends(require_auth),
     status_filter: Optional[str] = None,
     skip: int = 0,
@@ -602,20 +651,59 @@ async def get_orders(
     """Get orders for current user"""
     if current_user.role == "farmer":
         # Farmers see orders for their products
-        query = db.query(Order).join(Product).filter(Product.farmer_id == current_user.id)
+        query = db.query(Order).join(Product).join(User, User.id == Order.business_id).filter(Product.farmer_id == current_user.id)
     else:
         # Businesses see their own orders
-        query = db.query(Order).filter(Order.business_id == current_user.id)
+        query = db.query(Order).join(Product).join(User, User.id == Product.farmer_id).filter(Order.business_id == current_user.id)
     
     if status_filter:
         query = query.filter(Order.status == status_filter)
     
-    return query.offset(skip).limit(limit).all()
+    orders = query.offset(skip).limit(limit).all()
+    
+    # Format for frontend
+    result = []
+    for order in orders:
+        if current_user.role == "farmer":
+            customer = db.query(User).filter(User.id == order.business_id).first()
+            result.append({
+                "id": str(order.id),
+                "productId": str(order.product.id),
+                "productName": order.product.name,
+                "quantity": order.quantity,
+                "price": order.product.price,
+                "total": order.total_price,
+                "customerName": customer.full_name,
+                "customerEmail": customer.email,
+                "farmerEmail": current_user.email,
+                "deliveryDate": order.delivery_date,
+                "status": order.status,
+                "orderDate": order.created_at.strftime("%Y-%m-%d"),
+                "notes": order.notes
+            })
+        else:
+            result.append({
+                "id": str(order.id),
+                "productId": str(order.product.id),
+                "productName": order.product.name,
+                "quantity": order.quantity,
+                "price": order.product.price,
+                "total": order.total_price,
+                "customerName": current_user.full_name,
+                "customerEmail": current_user.email,
+                "farmerEmail": order.product.farmer.email,
+                "deliveryDate": order.delivery_date,
+                "status": order.status,
+                "orderDate": order.created_at.strftime("%Y-%m-%d"),
+                "notes": order.notes
+            })
+    
+    return result
 
-@app.patch("/orders/{order_id}", response_model=OrderResponse)
-async def update_order_status(
+@app.put("/api/orders/{order_id}")
+async def update_order_status_for_frontend(
     order_id: int,
-    status: str = Field(..., regex="^(Pending|Confirmed|Shipped|Delivered|Cancelled)$"),
+    status_data: dict,
     current_user: User = Depends(require_auth),
     db: Session = Depends(get_db)
 ):
@@ -636,23 +724,46 @@ async def update_order_status(
     if order.status == "Cancelled":
         raise HTTPException(status_code=400, detail="Cannot update cancelled order")
     
-    order.status = status
-    db.commit()
-    db.refresh(order)
-    return order
+    new_status = status_data.get("status")
+    if new_status:
+        order.status = new_status
+        db.commit()
+        db.refresh(order)
+    
+    return {"message": "Order status updated successfully"}
 
-@app.get("/farmers/products", response_model=List[ProductResponse])
-async def get_farmer_products(
+@app.delete("/api/orders/{order_id}")
+async def delete_order_for_frontend(
+    order_id: int,
     current_user: User = Depends(require_auth),
     db: Session = Depends(get_db)
 ):
-    """Get products for current farmer"""
-    if current_user.role != "farmer":
-        raise HTTPException(status_code=403, detail="Farmers only")
+    """Delete order"""
+    order = db.query(Order).filter(Order.id == order_id).first()
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
     
-    return db.query(Product).filter(Product.farmer_id == current_user.id).all()
+    # Authorization check
+    if current_user.role == "farmer":
+        if order.product.farmer_id != current_user.id:
+            raise HTTPException(status_code=403, detail="Not authorized")
+    else:  # business
+        if order.business_id != current_user.id:
+            raise HTTPException(status_code=403, detail="Not authorized")
+    
+    # Restore product quantity if order is cancelled
+    if order.status in ["Pending", "Confirmed"]:
+        product = order.product
+        product.quantity += order.quantity
+        if product.status == "Sold Out" and product.quantity > 0:
+            product.status = "Available"
+    
+    db.delete(order)
+    db.commit()
+    return {"message": "Order deleted successfully"}
 
-@app.get("/analytics/dashboard")
+# Analytics endpoint
+@app.get("/api/analytics/dashboard")
 async def get_analytics(
     current_user: User = Depends(require_auth),
     db: Session = Depends(get_db)
@@ -691,14 +802,9 @@ async def get_analytics(
         ]
     }
 
-@app.get("/health")
-async def health_check():
-    """Health check endpoint"""
-    return {"status": "healthy", "timestamp": datetime.utcnow()}
-
 # Static files for media
 app.mount("/media", StaticFiles(directory=MEDIA_ROOT), name="media")
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8000, reload=True)
